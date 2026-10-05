@@ -1,6 +1,6 @@
-const CACHE='lwct-dictionary-v1';
+const CACHE='lwct-dictionary-v2';
 const ROOT=new URL('./',self.location.href);
-const SHELL=['index.html','dictionary-data.json'];
+const SHELL=['index.html','dictionary-data.json','english-data.json'];
 self.addEventListener('install',event=>event.waitUntil((async()=>{
   const cache=await caches.open(CACHE);
   await cache.addAll(SHELL.map(path=>new URL(path,ROOT).href));
@@ -19,7 +19,7 @@ self.addEventListener('fetch',event=>{
     catch{const cached=await caches.match(new URL('index.html',ROOT).href);return cached||Response.error();}
     finally{clearTimeout(timer);}
   })());
-  else if(url.pathname===new URL('dictionary-data.json',ROOT).pathname)event.respondWith((async()=>{
+  else if(['dictionary-data.json','english-data.json'].some(path=>url.pathname===new URL(path,ROOT).pathname))event.respondWith((async()=>{
     const cache=await caches.open(CACHE),cached=await cache.match(request);
     if(cached)return cached;
     const response=await fetch(request);if(response.ok)await cache.put(request,response.clone());return response;

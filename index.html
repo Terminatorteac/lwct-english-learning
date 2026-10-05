@@ -69,7 +69,7 @@ const originalShow=show;show=function(view){originalShow(view);document.querySel
 document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>show(b.dataset.view));
 render();show('home');
 
-const wordArea=document.createElement('section');wordArea.className='card dictionary';wordArea.innerHTML=`<div class="section-title"><div><span class="eyebrow">İNGİLİZCE–TÜRKÇE SÖZLÜK</span><h2>Bir kelime, birçok anlam.</h2></div><span class="tag" id="dictionary-availability">Türkçe sözlük</span></div><form id="lookup-form"><label for="lookup">Hangi kelimeyi keşfetmek istersin?</label><div class="search-row"><input id="lookup" type="search" placeholder="Örneğin: take, run, light" maxlength="80" autocomplete="off" autocapitalize="none" spellcheck="false" required><button class="primary" type="submit">Kelimeyi ara ↗</button></div></form><p class="helper">Türkçe anlamları keşfet. İngilizce tanımlar ve telaffuz için çevrim içi sonuçları da açabilirsin.</p><div id="lookup-status" role="status" aria-live="polite"></div><div id="lookup-local"></div><button id="lookup-online" class="outline" type="button" hidden>İngilizce tanımlar ve telaffuz</button><p id="online-status" role="status" aria-live="polite"></p><div id="lookup-results"></div><details class="saved-words"><summary>Kaydettiğim kullanımlar</summary><div id="saved-results"></div></details>`;$('#words').insertBefore(wordArea,$('#word-grid'));
+const wordArea=document.createElement('section');wordArea.className='card dictionary';wordArea.innerHTML=`<div class="section-title"><div><span class="eyebrow">İNGİLİZCE–TÜRKÇE SÖZLÜK</span><h2>Bir kelime, birçok anlam.</h2></div><span class="tag" id="dictionary-availability">Türkçe sözlük</span></div><form id="lookup-form"><label for="lookup">Hangi kelimeyi keşfetmek istersin?</label><div class="search-row"><input id="lookup" type="search" placeholder="Örneğin: take, run, light" maxlength="80" autocomplete="off" autocapitalize="none" spellcheck="false" required><button class="primary" type="submit">Kelimeyi ara ↗</button></div></form><p class="helper">Türkçe anlamları keşfet. İngilizce tanımları ve kullanım örneklerini de açabilirsin.</p><div id="lookup-status" role="status" aria-live="polite"></div><div id="lookup-local"></div><button id="lookup-online" class="outline" type="button" hidden>İngilizce tanımlar ve örnekler</button><p id="online-status" role="status" aria-live="polite"></p><div id="lookup-results"></div><details class="saved-words"><summary>Kaydettiğim kullanımlar</summary><div id="saved-results"></div></details>`;$('#words').insertBefore(wordArea,$('#word-grid'));
 const brandSVG='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" role="img" aria-label="LWCT logosu"><rect width="80" height="80" rx="22" fill="#234e41"/><path d="M15 60 Q27 54 40 61 Q53 54 65 60" fill="none" stroke="#c3da91" stroke-width="3" stroke-linecap="round"/><text x="17" y="34" fill="#f5f7eb" font-family="Arial,sans-serif" font-size="25" font-weight="bold" letter-spacing="1">LW</text><text x="18" y="56" fill="#c3da91" font-family="Arial,sans-serif" font-size="23" font-weight="bold" letter-spacing="2">CT</text></svg>';
 $('.brand').innerHTML=brandSVG+'<span class="brand-name">Learning with<br><b>cafer teacher</b></span>';$('.brand').setAttribute('aria-label','Learning with cafer teacher — Ana Sayfa');document.title='Learning with cafer teacher · LWCT';$('.prototype').textContent='LWCT · Canlı sözlük';$('footer span:first-child').textContent='Learning with cafer teacher · Her kelime, kendi bağlamında.';
 const favicon=document.createElement('link');favicon.rel='icon';favicon.href='data:image/svg+xml,'+encodeURIComponent(brandSVG);document.head.append(favicon);
@@ -120,7 +120,7 @@ function renderLocalWord(word,meanings,isOwn=false){
 }
 async function lookupDictionary(raw){
   const word=raw.trim().toLowerCase().replace(/’/g,"'");
-  lookupController?.abort();const sequence=++lookupSequence;activeLookup=word;
+  lookupController?.abort();const sequence=++lookupSequence;activeLookup=word;$('#lookup-live')?.remove();
   $('#lookup-local').replaceChildren();$('#lookup-results').replaceChildren();$('#online-status').textContent='';$('#lookup-online').hidden=true;
   const status=$('#lookup-status');
   if(word.length>80||!word||! /^[a-z]+(?:[ '-][a-z]+)*$/.test(word)){status.textContent='İngilizce bir kelime veya kısa bir kelime grubu yaz.';wordArea.removeAttribute('aria-busy');return;}
@@ -133,6 +133,7 @@ async function lookupDictionary(raw){
       status.textContent='“'+word+'” için yerel sözlükte doğrudan kayıt yok. Bu bir çekimli biçim, kısaltma veya özel isim olabilir.';
       const roots=rootSuggestions(word,data);
       if(roots.length){const suggestions=node('div',undefined,'lookup-sense');suggestions.append(node('p','Olası yalın biçimler — kelimenin cümledeki kullanımına göre seç:'));for(const root of roots){const b=node('button',root+' →','outline');b.onclick=()=>{$('#lookup').value=root;lookupDictionary(root);};suggestions.append(b);}$('#lookup-local').append(suggestions);}
+      await lookupEnglish();
     }
   }catch{
     if(sequence!==lookupSequence)return;
@@ -140,14 +141,14 @@ async function lookupDictionary(raw){
     else status.textContent='Türkçe sözlük paketi yüklenemedi. İlk kullanımda internet gerekir; bağlantı sağlandığında tekrar ara.';
     const retry=node('button','Türkçe sözlüğü tekrar yükle','outline');retry.onclick=()=>lookupDictionary(word);$('#lookup-local').append(retry);
   }finally{
-    if(sequence===lookupSequence){wordArea.removeAttribute('aria-busy');$('#lookup-online').hidden=false;$('#lookup-online').disabled=false;$('#lookup-online').textContent='İngilizce tanımlar ve telaffuz';}
+    if(sequence===lookupSequence){wordArea.removeAttribute('aria-busy');$('#lookup-online').hidden=false;$('#lookup-online').disabled=false;$('#lookup-online').textContent='İngilizce tanımlar ve örnekler';}
   }
 }
 function cachedDictionary(word){try{const value=JSON.parse(localStorage.getItem('lwct-dictionary:'+word));return Array.isArray(value?.entries)&&value.entries.every(e=>e&&typeof e.word==='string'&&Array.isArray(e.meanings))?value.entries:null;}catch{return null;}}
 async function lookupOnline(){
   const word=activeLookup,sequence=lookupSequence;if(!word)return;
   lookupController?.abort();const controller=new AbortController();lookupController=controller;
-  const cached=cachedDictionary(word),status=$('#online-status'),button=$('#lookup-online');
+  const cached=cachedDictionary(word),status=$('#online-status'),button=$('#lookup-live')||$('#lookup-online');
   if(cached){renderDictionary(cached);status.textContent='Bu cihazda saklanan İngilizce sonuçlar gösteriliyor.';}else status.textContent='İngilizce sözlüğe bağlanılıyor…';
   button.disabled=true;const timer=setTimeout(()=>controller.abort(),10000);
   try{
@@ -165,7 +166,32 @@ async function lookupOnline(){
   }finally{clearTimeout(timer);if(sequence===lookupSequence){button.disabled=false;button.textContent='İngilizce sonuçları yeniden dene';}}
 }
 $('#lookup-form').onsubmit=event=>{event.preventDefault();return lookupDictionary($('#lookup').value);};
-$('#lookup-online').onclick=lookupOnline;
+let englishPromise;
+async function lookupEnglish(){
+  const word=activeLookup,sequence=lookupSequence,button=$('#lookup-online'),status=$('#online-status');
+  button.disabled=true;status.textContent='İngilizce tanımlar açılıyor…';
+  try{
+    if(!englishPromise)englishPromise=(async()=>{
+      const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),15000);
+      try{const r=await fetch('english-data.json',{signal:controller.signal});if(!r.ok)throw Error('English package unavailable');const data=await r.json();if(!Array.isArray(data.run))throw Error('Invalid English package');return data;}
+      finally{clearTimeout(timer);}
+    })().catch(error=>{englishPromise=null;throw error;});
+    const data=await englishPromise;if(sequence!==lookupSequence)return;
+    const meanings=data[word],cached=cachedDictionary(word);
+    if(meanings){
+      renderDictionary([{word,meanings,sourceUrls:word==='you'?[]:['https://wordnet.princeton.edu/'],...(word==='you'?{}:{license:{name:'WordNet License',url:'https://wordnet.princeton.edu/license-and-commercial-use'}})}]);
+      status.textContent=word==='you'?'İngilizce tanım hazır · LWCT öğrenme notu.':'İngilizce tanımlar hazır · Uygulamaya eklenen WordNet verisi.';
+    }else if(cached){renderDictionary(cached);status.textContent='Bu cihazda saklanan İngilizce tanımlar gösteriliyor.';}
+    else status.textContent='Bu yazımla İngilizce sözlük paketinde kayıt yok. Yalın biçimi veya çevrim içi aramayı dene.';
+  }catch{if(sequence!==lookupSequence)return;const cached=cachedDictionary(word);if(cached)renderDictionary(cached);status.textContent=cached?'Saklanan İngilizce sonuçlar gösteriliyor.':'İngilizce paket henüz indirilemedi. İnternet bağlantısıyla tekrar deneyebilirsin.';}
+  finally{
+    if(sequence===lookupSequence){
+      button.disabled=false;button.textContent='İngilizce tanımları göster';
+      if(!$('#lookup-live')){const live=node('button','Güncel tanım ve ses için çevrim içi ara','outline');live.id='lookup-live';live.onclick=lookupOnline;$('#lookup-results').before(live);}
+    }
+  }
+}
+$('#lookup-online').onclick=lookupEnglish;
 const dictionaryStyle=node('style');dictionaryStyle.textContent='.lookup-entry li{margin:12px 0;line-height:1.7;overflow-wrap:anywhere}.lookup-sense .outline{margin:5px}#lookup-online{min-height:44px}#online-status{font-size:13px;line-height:1.7}.dictionary{scroll-margin-top:20px}';document.head.append(dictionaryStyle);
 renderSaved();
 
@@ -222,7 +248,8 @@ if(typeof navigator!=='undefined'&&'serviceWorker' in navigator&&/^https?:$/.tes
   navigator.serviceWorker.register('sw.js').then(async registration=>{
     const check=async()=>{
       const response=await caches.match(new URL('dictionary-data.json',location.href).href);
-      if(response&&offlineLabel())offlineLabel().textContent='Sözlük çevrimdışına hazır';
+      const english=await caches.match(new URL('english-data.json',location.href).href);
+      if(response&&english&&offlineLabel())offlineLabel().textContent='Sözlük çevrimdışına hazır';
     };
     await check();
     navigator.serviceWorker.addEventListener('controllerchange',check);

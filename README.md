@@ -1,18 +1,29 @@
-# Bloom — İngilizce çalışma dashboard'u
+# Learning with cafer teacher · LWCT
 
-Herkesin kendi seviyesinde çalışabilmesi için A1–B2 seviye seçimi, günlük hedef, 12 örnek alıştırma, 12 kelime kartı ve tarayıcıda saklanan ilerleme sunan ilk prototip.
+Türkçe arayüzlü, A1–C2 seviyelerinde bağlam odaklı İngilizce çalışma uygulaması.
 
-`dist/index.html` dosyasını bir tarayıcıda açın veya `dist` klasörünü statik HTTP sunucusuyla servis edin. Derleme ya da paket kurulumu gerekmez. Yazı tipleri yüklenemezse sistem yazı tipi kullanılır.
+[Uygulamayı aç](https://terminatorteac.github.io/lwct-english-learning/)
 
-Bu sürümde hesap sistemi ve cihazlar arası eşitleme yoktur. Aynı tarayıcı profili tek çalışma alanı kullanır. Günlük tamamlanma, her seviyedeki her alıştırma için günde bir kez sayılır. Daha yüksek hedefler farklı seviyelerden alıştırmalarla tamamlanabilir. İçerik örnek niteliğindedir; tam bir dil kursu değildir.
+Ana Sayfa, Kelime, İstatistik, İş İngilizcesi, Bilimsel Literatür, Günlük İngilizce ve 10 bin kelimelik sıklık kataloğu bulunur. Seviye seçimi günlük alıştırmaları ve konu kartlarını değiştirir. Kelime sıklık listesi doğrulanmış CEFR düzeyleri taşımaz.
 
-Sonraki aşamalar: içerik havuzunu genişletme, kullanıcı hesapları, kişiye göre kalıcı veri, aralıklı kelime tekrarı, dinleme ve konuşma pratiği. GitHub deposu bu aşamada bağlanmamıştır.
+## Sözlük
 
-## Bağlam ve alt menü güncellemesi
-Ana Sayfa, Çeviri, Kelimeler ve İstatistik için sabit alt menü eklendi. Take, run ve light sözcüklerinin toplam 8 kullanımı ayrı kimliklerle takip edilir. Önceki kelime kayıtları korunur; bağlam öğrenildi olarak otomatik sayılmaz. Çeviri yalnızca arayüzde listelenen 8 örnek cümleyi destekler, harici çeviri servisi bağlı değildir. Mobil güvenli alan boşluğu ve azaltılmış hareket tercihi desteklenir. Gerçek iOS/Android cihaz testi henüz yapılmamıştır.
+- 34.975 başlıklı FreeDict İngilizce–Türkçe sözlük, uygulamanın kendi dosyalarından yüklenir.
+- 7.298 kayıtlık İngilizce paket, WordNet tanımlarını ve örneklerini içerir; `you` kaydı LWCT öğrenme notudur.
+- 10 bin listedeki 7.519 kayıt, iki paketten en az birinde doğrudan bulunur. Ek LWCT notları ve yalın biçim önerileri de vardır. Tam kapsama iddiası yoktur; özel isimler, altyazı parçaları ve bazı çekimler bulunmayabilir.
+- İngilizce tanım düğmesi yerel paketi açar. Güncel tanım ve ses için ayrı, isteğe bağlı çevrim içi arama bulunur. Dış servisin hatası yerel sonuçları silmez.
+- Kelimeler birden çok anlama gelebilir. Türkçe kaynak eski yazımlar içerebilir. Konu kartlarında anlam, örnek cümleye göre gösterilir.
 
-## LWCT güncellemesi
-Uygulama adı Learning with cafer teacher olarak değiştirildi; LWCT SVG logosu eklendi. dictionary.js Free Dictionary API üzerinden İngilizce kelime araması yapar. Tanımlar, mevcut örnekler, fonetik bilgi ve varsa ses gösterilir. Kaynak ve lisans bağlantıları korunur. Kullanıcı seçtiği anlamı cihazına kaydedebilir. Son 30 farklı sorguya kadar yerel önbellek tutulur; ağ hatasında eski kayıt varsa kullanılır. Serbest Türkçe cümle çevirisi bu sürüme bağlı değildir. Sözlük kodunun sözdizimi doğrulandı; bu ortamdan canlı uç noktaya bağlantı kurulamadığından canlı sorgu doğrulanamadı.
+## Telefonda kullanım
 
-## Canlı bağlantı doğrulaması
-Ağ erişimi sağlandıktan sonra Node fetch ile take (65 tanım), run (63 tanım) ve light (48 tanım) sorguları HTTP 200 döndürdü. API Access-Control-Allow-Origin: * başlığını sunuyor. PowerShell istemcisinde Windows güvenlik paketi kaynaklı TLS hatası oluştu; sertifika denetimi kapatılmadan Node üzerinden bağlantı başarılı oldu. Bazı ek istekler zaman aşımına uğradı; servis sürekliliği garanti edilmez. Tarayıcı içindeki uçtan uca arama ayrıca doğrulanmalıdır.
+Safari ile uygulamayı açıp Paylaş → Ana Ekrana Ekle seçeneğini kullanın. İlk çevrim içi yükleme tamamlanınca sözlük bölümünde **Sözlük çevrimdışına hazır** görünür. Uygulama ve iki sözlük paketi önbelleğe alınır. Ses kayıtları internet gerektirebilir.
+
+İlerleme bu cihazın tarayıcısında saklanır; hesap ve cihazlar arası eşitleme yoktur. Site verilerini silmek veya tarayıcının depolamayı temizlemesi, ilerlemeyi ve çevrimdışı önbelleği kaldırabilir.
+
+## Yayın ve kaynaklar
+
+GitHub Pages ana dalın kök dizinini yayımlar. `index.html` uygulama kodunu içerir; `dictionary-data.json` ve `english-data.json` sözlük paketleridir. `sw.js` çevrimdışı önbelleği yönetir. Yeni paketlerde önbellek sürümü artırılmalıdır.
+
+Veri kaynakları, kapsam, dönüşümler ve lisanslar [DICTIONARY-SOURCES.md](DICTIONARY-SOURCES.md) içinde açıklanır. Türkçe veri GPL-2.0-or-later, İngilizce veri WordNet lisansına tabidir; lisans dosyaları dağıtıma dahildir.
+
+Doğrulama: kelime listesinden arama, Türkçe/İngilizce paket sonuçları, bağlam örnekleri, yalın biçim önerileri, bulunamayan kelime, hizmet hatası, eski isteğin yeni sonucu ezmemesi, kayıtlı sonuç ve çevrimdışı önbellek davranışları test edildi. Gerçek iOS cihazında test henüz yapılmadı.
