@@ -1,4 +1,4 @@
-const CACHE='lwct-dictionary-v5-domain1272';
+const CACHE='lwct-dictionary-v6-daily24';
 const ROOT=new URL('./',self.location.href);
 const SHELL=['index.html','dictionary-data.json','english-data.json'];
 self.addEventListener('install',event=>event.waitUntil((async()=>{

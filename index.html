@@ -14654,6 +14654,36 @@ const showBeforeCollection=show;show=function(view){showBeforeCollection(view);i
 const collectionStyle=node('style');collectionStyle.textContent='.collection-panel{margin:20px 0 36px}.collection-controls{display:flex;flex-wrap:wrap;gap:12px;margin:18px 0}.collection-controls input{flex:1;min-width:180px}.collection-controls input,.collection-controls select{padding:12px;border:1px solid #ccd8c1;border-radius:10px;font:inherit;min-height:44px}.collection-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.collection-card{padding:20px;min-width:0;overflow-wrap:anywhere}.collection-card h3{font-size:18px;margin:12px 0}.collection-card small{color:#596a52}.collection-card summary{cursor:pointer;min-height:36px;color:#285741}.collection-card p{line-height:1.7}.collection-card .outline{margin-top:12px}.collection-pages{display:flex;justify-content:space-between;margin:18px 0}.collection-sources{line-height:1.7;font-size:13px}.collection-sources a{color:#285741}@media(max-width:950px){.collection-cards{grid-template-columns:1fr 1fr}}@media(max-width:600px){.collection-cards{grid-template-columns:1fr}.collection-controls>*{width:100%}}';document.head.append(collectionStyle);
 document.querySelector('.release-label').textContent=' · Sürüm 2026.10.07 · 20 hikâye · 1.272 alan kelimesi · 100 kalıp';
 
+// A stable daily selection: reloading keeps today's plan; tomorrow rotates it.
+function dailySelection(level=state.level,day=dateKey()){
+ const hash=text=>{let h=2166136261;for(const c of text)h=Math.imul(h^c.charCodeAt(0),16777619);return h>>>0;};
+ const rotate=items=>[...items].sort((a,b)=>hash(day+level+(a.word||a.id))-hash(day+level+(b.word||b.id)));
+ const buckets=['everyday','business','science'].map(domain=>rotate(domainLibrary.filter(e=>e.domain===domain&&e.level===level)));
+ const words=[],seen=new Set(),limit=Math.max(20,Number(state.wordGoal)||20);let i=0;
+ while(words.length<limit&&buckets.some(b=>i<b.length)){for(const bucket of buckets){const item=bucket[i];if(item&&!seen.has(item.word)&&words.length<limit){seen.add(item.word);words.push(item);}}i++;}
+ const phrases=rotate(phraseLibrary.filter(p=>p.level===level)).slice(0,3);
+ const story=rotate(storyLibrary.filter(s=>s.level===level))[0];return {words,phrases,story};
+}
+function renderDailyPlan(){
+ const list=$('#lessons');if(!list)return;list.replaceChildren();const plan=dailySelection();
+ if(!state.dailyPlanDone||typeof state.dailyPlanDone!=='object')state.dailyPlanDone={};
+ const today=()=>new Set(state.dailyPlanDone[dateKey()]||[]);
+ const ids=[...plan.words.map(w=>'word:'+w.word),...plan.phrases.map(p=>p.id),'story:'+plan.story.id];
+ const progress=node('p',undefined,'daily-progress');progress.setAttribute('role','status');list.append(progress);
+ const updateProgress=()=>{const done=today();progress.textContent=`${ids.filter(id=>done.has(id)).length}/${ids.length} içerik tamamlandı · ${plan.words.length} kelime + 3 kalıp + 1 hikâye`;};updateProgress();
+ const grid=node('div',undefined,'daily-grid');list.append(grid);
+ function completion(id,label,word){const b=node('button',today().has(id)?'✓ Tamamlandı':label,'outline daily-complete');b.type='button';b.setAttribute('aria-pressed',String(today().has(id)));b.onclick=()=>{const done=today(),wasDone=done.has(id);wasDone?done.delete(id):done.add(id);state.dailyPlanDone[dateKey()]=[...done];if(word){const words=new Set(state.wordDone[dateKey()]||[]);wasDone?words.delete(word):words.add(word);state.wordDone[dateKey()]=[...words];}save();b.textContent=wasDone?label:'✓ Tamamlandı';b.setAttribute('aria-pressed',String(!wasDone));updateProgress();const target=$('#word-target');if(target){const n=(state.wordDone[dateKey()]||[]).length;target.querySelector('span').textContent=n+'/'+state.wordGoal+' kelime';target.classList.toggle('complete',n>=state.wordGoal);}};return b;}
+ const domainNames={everyday:'Gündelik',business:'İş',science:'Bilim'};
+ for(const [index,w] of plan.words.entries()){const card=node('article',undefined,'card daily-item');card.append(node('small',`${index+1}. kelime · ${state.level} · ${domainNames[w.domain]}`),node('h3',w.word));const d=node('details');d.append(node('summary','Anlamını göster'),node('p',w.meaning));card.append(d,completion('word:'+w.word,'Öğrendim',w.word));grid.append(card);}
+ for(const p of plan.phrases){const card=node('article',undefined,'card daily-item');card.append(node('small',state.level+' · Günün kalıbı'),node('h3',p.en));const d=node('details');d.append(node('summary','Türkçesini göster'),node('p',p.tr));card.append(d,completion(p.id,'Çalıştım'));grid.append(card);}
+ const s=plan.story,card=node('article',undefined,'card daily-item');card.append(node('small',state.level+' · Günün hikâyesi'),node('h3',s.title),node('p',s.words+' kelime · Etkileşimli İngilizce–Türkçe okuma'));const open=node('button','Hikâyeyi aç →','outline');open.onclick=()=>{selectedStoryId=s.id;show('reading');};card.append(open,completion('story:'+s.id,'Okudum'));grid.append(card);
+ const practice=node('button','Ek alıştırmalara geç →','outline');practice.onclick=()=>{current=0;show('learn');};list.append(practice);
+ const title=list.parentElement.querySelector('.section-title p');if(title)title.textContent='Her gün yenilenen, seviyene uygun kelimeler, kalıplar ve bir hikâye. İlerlemen bu cihazda saklanır.';
+}
+const renderBeforeDailyPlan=render;render=function(){renderBeforeDailyPlan();renderDailyPlan();};
+const dailyStyle=node('style');dailyStyle.textContent='#lessons{display:block}.daily-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:16px 0}.daily-item{padding:18px;min-width:0;overflow-wrap:anywhere}.daily-item h3{margin:12px 0;font-size:18px}.daily-item small{font-size:11px;color:#536b49}.daily-item summary{cursor:pointer;min-height:36px;color:#315c43}.daily-item p{line-height:1.7}.daily-item .outline{margin-top:10px;min-height:40px}.daily-item .daily-complete[aria-pressed=true]{background:#e5efdc;color:#254e35}.daily-progress{line-height:1.7;font-weight:600;color:#315c43}@media(max-width:600px){.daily-grid{grid-template-columns:1fr}}';document.head.append(dailyStyle);
+renderDailyPlan();document.querySelector('.release-label').textContent+=' · Günlük plan 24+';
+
 // Offline status is based on a completed cache, not a guess about connectivity.
 if(typeof navigator!=='undefined'&&'serviceWorker' in navigator&&/^https?:$/.test(location.protocol)){
   const offlineLabel=()=>document.querySelector('#dictionary-availability');
