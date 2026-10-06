@@ -1,4 +1,4 @@
-const CACHE='lwct-dictionary-v2';
+const CACHE='lwct-dictionary-v4-stories20';
 const ROOT=new URL('./',self.location.href);
 const SHELL=['index.html','dictionary-data.json','english-data.json'];
 self.addEventListener('install',event=>event.waitUntil((async()=>{
@@ -15,7 +15,7 @@ self.addEventListener('fetch',event=>{
   if(request.method!=='GET'||url.origin!==ROOT.origin||!url.pathname.startsWith(ROOT.pathname))return;
   if(request.mode==='navigate')event.respondWith((async()=>{
     const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),4000);
-    try{const response=await fetch(request,{signal:controller.signal});if(!response.ok)throw Error('HTTP error');return response;}
+    try{const response=await fetch(request,{signal:controller.signal});if(!response.ok)throw Error('HTTP error');const cache=await caches.open(CACHE);await cache.put(new URL('index.html',ROOT).href,response.clone());return response;}
     catch{const cached=await caches.match(new URL('index.html',ROOT).href);return cached||Response.error();}
     finally{clearTimeout(timer);}
   })());
