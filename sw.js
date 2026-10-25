@@ -1,4 +1,4 @@
-const CACHE='lwct-dictionary-v6-daily24';
+const CACHE='lwct-dictionary-v7-grammar-alphabet';
 const ROOT=new URL('./',self.location.href);
 const SHELL=['index.html','dictionary-data.json','english-data.json'];
 self.addEventListener('install',event=>event.waitUntil((async()=>{
@@ -25,3 +25,4 @@ self.addEventListener('fetch',event=>{
     const response=await fetch(request);if(response.ok)await cache.put(request,response.clone());return response;
   })());
 });
+

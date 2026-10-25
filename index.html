@@ -9,7 +9,7 @@ body{padding-bottom:calc(90px + env(safe-area-inset-bottom,0px))}.bottom-nav{pos
 <div class="shell"><header><span>Çalışma alanım <span class="crumb">/ <span id="crumb">Genel bakış</span></span></span><div class="header-right"><span class="prototype">İlk sürüm</span><span id="date"></span><span class="avatar small">S</span></div></header><main>
 <section id="home" class="view"><div class="heading"><div><div class="eyebrow">BUGÜN, KENDİN İÇİN BİR ADIM</div><h1>İngilizcene yer aç<span>.</span></h1><p>Küçük bir pratikle başla. Gerisi her gün biraz daha kolay.</p></div><button class="outline" id="edit-goal">🎯 Hedef belirle</button></div>
 <div class="top-grid"><div class="hero"><div class="hero-copy"><span class="pill">✦ SENİN GÜNLÜK ROTAN</span><h2>Bir kahve molası kadar.<br>Bir adım ileri.</h2><p>Kelime, okuma ve pratik. Bugünkü kısa<br>çalışmanı tamamla, ritmini bul.</p><button class="primary" id="start">Çalışmaya başla <span>↗</span></button><small id="hero-level">A1 başlangıç · 3 kısa alıştırma</small></div><div class="hero-art" aria-hidden="true"><div class="orbit"></div><div class="spark">✳</div><div class="word-card card-back">hello<span>Yeni bir başlangıç.</span></div><div class="word-card card-front">a little<br><i>every day.</i><span>Her gün biraz.</span></div><span class="art-star">✧</span></div></div><div class="goal card"><div class="card-title">Günlük hedef <span>◎</span></div><div class="ring" id="ring"><div><strong id="today">0</strong><span id="goal-label">/ 3 alıştırma</span></div></div><h3 id="goal-title">Bugün seninle başlasın.</h3><p id="goal-sub">İlk alıştırman için güzel bir zaman.</p><div id="word-target" class="word-target"><b>Kelime hedefi</b><span>0/10 kelime</span></div></div></div>
-<div class="stats"><div class="stat"><span class="stat-icon orange">♨</span><div><small>Çalışma serisi</small><strong id="streak">0 <em>gün</em></strong></div><span class="stat-caption">Ritmini yakala</span></div><div class="stat"><span class="stat-icon purple">▤</span><div><small>Öğrendiğin kelimeler</small><strong id="known">0 <em>kelime</em></strong></div><span class="stat-caption">Biriktikçe büyür</span></div><div class="stat"><span class="stat-icon green">✓</span><div><small>Tamamlanan pratik</small><strong id="total">0 <em>alıştırma</em></strong></div><span class="stat-caption">Her adım değerli</span></div></div>
+<div class="stats"><div class="stat"><span class="stat-icon orange">♨</span><div><small>Çalışma serisi</small><strong id="streak">0 <em>gün</em></strong></div><span class="stat-caption">Ritmini yakala</span></div><div class="stat"><span class="stat-icon green">✓</span><div><small>Tamamlanan pratik</small><strong id="total">0 <em>alıştırma</em></strong></div><span class="stat-caption">Her adım değerli</span></div></div>
 <div class="bottom-grid"><section class="card plan"><div class="section-title"><div><h2>Bugünün çalışma planı</h2><p>Biraz öğren, biraz dene, kalıcı hale getir.</p></div><span class="tag" id="level-tag">A1 · Başlangıç</span></div><div id="lessons"></div></section><section class="card week"><div class="section-title"><div><h2>Haftalık ritmin</h2><p>Önemli olan yeniden gelmek.</p></div><span>↗</span></div><div id="chart" class="chart"></div><div class="week-footer"><span>Son 7 gün</span><strong id="week-count">0 alıştırma</strong></div></section></div>
 <div class="daily"><span class="daily-icon">✧</span><div><small>GÜNÜN HATIRLATMASI</small><p>“Progress, not perfection.” <span>— Mükemmelliğe değil, ilerlemeye odaklan.</span></p></div><span class="daily-end">Her gün biraz. ↗</span></div></section>
 <section id="learn" class="view" hidden><div class="heading"><div><div class="eyebrow">BİRAZ PRATİK, BİRAZ ÖZGÜVEN</div><h1>Çalışma alanı<span>.</span></h1><p>Seviyene uygun kısa alıştırmalarla devam et.</p></div></div><div class="card exercise"><span class="tag" id="exercise-type"></span><h2 id="question"></h2><p id="context"></p><div id="answers"></div><p id="feedback" role="status" aria-live="polite"></p><button class="primary" id="next" hidden>Sonraki alıştırma →</button></div></section>
@@ -36,7 +36,7 @@ const vocab=[['hello','merhaba','Hello, nice to meet you.','A1'],['learn','öğr
 function save(){try{localStorage.setItem(key,JSON.stringify(state));}catch{storageOK=false;}if(!storageOK)$('footer span:last-child').textContent='Tarayıcı kaydı kullanılamıyor; ilerleme yalnızca bu oturumda tutulur.';}
 function count(d){return state.done.filter(x=>x.date===d).length;}let current=0,answered=false;const names={home:'Genel bakış',learn:'Çalışma alanı',words:'Kelime defterim',progress:'İlerlemem'};
 function show(view){document.querySelectorAll('.view').forEach(x=>x.hidden=x.id!==view);document.querySelectorAll('.nav').forEach(x=>x.classList.toggle('active',x.dataset.view===view));$('#crumb').textContent=names[view];if(view==='learn')exercise();if(view==='words')words();if(view==='progress')history();window.scrollTo(0,0);}
-function render(){const n=count(dateKey());$('#today').textContent=n;$('#goal-label').textContent=`/ ${state.goal} alıştırma`;$('#ring').style.background=`conic-gradient(#6a8c58 ${Math.min(n/state.goal,1)*360}deg,#eff2e9 0deg)`;$('#goal-title').textContent=n>=state.goal?'Günlük hedef tamamlandı!':n?'Güzel gidiyorsun.':'Bugün seninle başlasın.';$('#goal-sub').textContent=n>=state.goal?'Yarın yine küçük bir adımla devam.':`${Math.max(state.goal-n,0)} alıştırmayla hedefine ulaşabilirsin.`;const wordCount=Array.isArray(state.wordDone?.[dateKey()])?state.wordDone[dateKey()].length:0;const target=$('#word-target');if(target){target.innerHTML=`<b>Kelime hedefi</b><span>${wordCount}/${state.wordGoal} kelime</span>`;target.classList.toggle('complete',wordCount>=state.wordGoal);}$('#known').innerHTML=`${state.known.length} <em>kelime</em>`;$('#total').innerHTML=`${state.done.length} <em>alıştırma</em>`;let streak=0,d=new Date();if(!count(dateKey(d)))d.setDate(d.getDate()-1);while(count(dateKey(d))){streak++;d.setDate(d.getDate()-1);}$('#streak').innerHTML=`${streak} <em>gün</em>`;$('#hero-level').textContent=`${state.level} seviyesi · 3 kısa alıştırma`;$('#level-tag').textContent=`${state.level} · Günlük pratik`;$('#lessons').innerHTML=bank[state.level].map((x,i)=>`<button class="lesson" data-lesson="${i}"><span class="lesson-icon ${['orange','purple','green'][i]}">${['▤','≡','✧'][i]}</span><span><b>${['Yeni kelimelere merhaba','Kısa bir hikâye, yeni bir bakış','Bildiğini pratiğe dök'][i]}</b><small>${x[0]} · ${state.level} · 1 alıştırma</small></span><span class="lesson-end">${state.done.some(e=>e.date===dateKey()&&e.id===state.level+i)?'✓':'↗'}</span></button>`).join('');document.querySelectorAll('[data-lesson]').forEach(b=>b.onclick=()=>{current=+b.dataset.lesson;show('learn');});let days=[];for(let i=6;i>=0;i--){let d=new Date();d.setDate(d.getDate()-i);days.push({d,n:count(dateKey(d))});}const max=Math.max(state.goal,...days.map(x=>x.n));$('#chart').innerHTML=days.map((x,i)=>`<div class="day ${i===6?'today':''}" title="${x.d.toLocaleDateString('tr-TR')}: ${x.n} alıştırma"><span class="bar" style="height:${Math.max(4,x.n/max*105)}px"></span><small>${x.d.toLocaleDateString('tr-TR',{weekday:'short'})}</small></div>`).join('');$('#week-count').textContent=days.reduce((s,x)=>s+x.n,0)+' alıştırma';}
+function render(){const n=count(dateKey());$('#today').textContent=n;$('#goal-label').textContent=`/ ${state.goal} alıştırma`;$('#ring').style.background=`conic-gradient(#6a8c58 ${Math.min(n/state.goal,1)*360}deg,#eff2e9 0deg)`;$('#goal-title').textContent=n>=state.goal?'Günlük hedef tamamlandı!':n?'Güzel gidiyorsun.':'Bugün seninle başlasın.';$('#goal-sub').textContent=n>=state.goal?'Yarın yine küçük bir adımla devam.':`${Math.max(state.goal-n,0)} alıştırmayla hedefine ulaşabilirsin.`;const wordCount=Array.isArray(state.wordDone?.[dateKey()])?state.wordDone[dateKey()].length:0;const target=$('#word-target');if(target){target.innerHTML=`<b>Kelime hedefi</b><span>${wordCount}/${state.wordGoal} kelime</span>`;target.classList.toggle('complete',wordCount>=state.wordGoal);}$('#total').innerHTML=`${state.done.length} <em>alıştırma</em>`;let streak=0,d=new Date();if(!count(dateKey(d)))d.setDate(d.getDate()-1);while(count(dateKey(d))){streak++;d.setDate(d.getDate()-1);}$('#streak').innerHTML=`${streak} <em>gün</em>`;$('#hero-level').textContent=`${state.level} seviyesi · 3 kısa alıştırma`;$('#level-tag').textContent=`${state.level} · Günlük pratik`;$('#lessons').innerHTML=bank[state.level].map((x,i)=>`<button class="lesson" data-lesson="${i}"><span class="lesson-icon ${['orange','purple','green'][i]}">${['▤','≡','✧'][i]}</span><span><b>${['Yeni kelimelere merhaba','Kısa bir hikâye, yeni bir bakış','Bildiğini pratiğe dök'][i]}</b><small>${x[0]} · ${state.level} · 1 alıştırma</small></span><span class="lesson-end">${state.done.some(e=>e.date===dateKey()&&e.id===state.level+i)?'✓':'↗'}</span></button>`).join('');document.querySelectorAll('[data-lesson]').forEach(b=>b.onclick=()=>{current=+b.dataset.lesson;show('learn');});let days=[];for(let i=6;i>=0;i--){let d=new Date();d.setDate(d.getDate()-i);days.push({d,n:count(dateKey(d))});}const max=Math.max(state.goal,...days.map(x=>x.n));$('#chart').innerHTML=days.map((x,i)=>`<div class="day ${i===6?'today':''}" title="${x.d.toLocaleDateString('tr-TR')}: ${x.n} alıştırma"><span class="bar" style="height:${Math.max(4,x.n/max*105)}px"></span><small>${x.d.toLocaleDateString('tr-TR',{weekday:'short'})}</small></div>`).join('');$('#week-count').textContent=days.reduce((s,x)=>s+x.n,0)+' alıştırma';}
 function exercise(){answered=false;const q=bank[state.level][current];$('#exercise-type').textContent=`${state.level} · ${q[0]} · ${current+1}/3`;$('#question').textContent=q[1];$('#context').textContent=q[2];$('#feedback').textContent='';$('#next').hidden=true;$('#answers').innerHTML=q[3].map((a,i)=>`<button class="answer" data-answer="${i}">${a}</button>`).join('');document.querySelectorAll('.answer').forEach(b=>b.onclick=()=>{if(answered)return;const correct=+b.dataset.answer===q[4];if(!correct){b.classList.add('wrong');b.disabled=true;$('#feedback').textContent='Henüz değil. Bir daha dene.';return;}answered=true;b.classList.add('correct');document.querySelectorAll('.answer').forEach(x=>x.disabled=true);const id=state.level+current;const already=state.done.some(x=>x.id===id&&x.date===dateKey());if(!already){state.done.push({id,date:dateKey(),type:q[0],level:state.level});save();}$('#feedback').textContent='Doğru! '+q[5]+(already?' Bu alıştırmayı bugün tamamladın; tekrarın kayda eklenmedi.':'');$('#next').textContent=current===2?'Dashboard’a dön →':'Sonraki alıştırma →';$('#next').hidden=false;render();});}
 $('#next').onclick=()=>{if(current===2){show('home');return;}current++;exercise();};
 function words(){$('#word-grid').innerHTML=vocab.filter(v=>v[3]===state.level).map(v=>`<article class="card vocab"><span class="tag">${v[3]} · Kelime kartı</span><h2>${v[0]}</h2><p>${v[2]}</p><p class="meaning" hidden>${v[1]}</p><button class="outline reveal">Anlamını göster</button><button class="outline know" data-word="${v[0]}">${state.known.includes(v[0])?'✓ Öğrendim':'Öğrendim olarak işaretle'}</button></article>`).join('');document.querySelectorAll('.reveal').forEach(b=>b.onclick=()=>{const p=b.parentElement.querySelector('.meaning');p.hidden=!p.hidden;b.textContent=p.hidden?'Anlamını göster':'Anlamını gizle';});document.querySelectorAll('.know').forEach(b=>b.onclick=()=>{const w=b.dataset.word;state.known=state.known.includes(w)?state.known.filter(x=>x!==w):[...state.known,w];save();render();words();});}
@@ -65,7 +65,7 @@ $('#context-start').onclick=()=>show('words');
 function toggleSense(id){state.senses=state.senses.includes(id)?state.senses.filter(x=>x!==id):[...state.senses,id];save();render();}
 words=function(){const groups=[...new Set(senses.map(s=>s.word))];$('#word-grid').innerHTML=groups.map(w=>`<section class="card sense-group"><div class="section-title"><h2>${w}</h2><span class="tag">${senses.filter(s=>s.word===w&&state.senses.includes(s.id)).length}/${senses.filter(s=>s.word===w).length} kullanım öğrenildi</span></div>${senses.filter(s=>s.word===w).map(s=>`<article class="sense"><span class="scene">${s.scene}</span><h3>${s.en}</h3><details><summary>Bu bağlamda ne anlama geliyor?</summary><p><strong>${s.tr}</strong></p><p>${s.meaning}. ${s.note}</p></details><button class="outline sense-known" data-sense="${s.id}" aria-pressed="${state.senses.includes(s.id)}">${state.senses.includes(s.id)?'✓ Bu kullanımı öğrendim':'Bu kullanımı öğrendim olarak işaretle'}</button></article>`).join('')}</section>`).join('');document.querySelectorAll('.sense-known').forEach(b=>b.onclick=()=>{const id=b.dataset.sense;toggleSense(id);words();const target=[...document.querySelectorAll('.sense-known')].find(x=>x.dataset.sense===id);target?.focus({preventScroll:true});});};
 const originalHistory=history;history=function(){originalHistory();const box=document.createElement('div');box.className='context-summary';const learned=senses.filter(s=>state.senses.includes(s.id));box.innerHTML=`<h2>Bağlam ilerlemen</h2><p><strong>${learned.length} / ${senses.length}</strong> kullanım öğrenildi · <strong>${new Set(learned.map(s=>s.word)).size}</strong> farklı kelime</p><p>${senses.length-learned.length} kullanım keşfedilmeyi bekliyor.</p>`;$('#history').prepend(box);};
-const originalRender=render;render=function(){originalRender();$('#known').innerHTML=`${senses.filter(s=>state.senses.includes(s.id)).length} <em>kullanım</em>`;$('#known').previousElementSibling.textContent='Öğrendiğin bağlamlar';};
+
 const originalShow=show;show=function(view){originalShow(view);document.querySelectorAll('[data-view]').forEach(b=>{const active=b.dataset.view===view;b.classList.toggle('active',active);if(active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');});};
 document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>show(b.dataset.view));
 render();show('home');
@@ -14683,6 +14683,1631 @@ function renderDailyPlan(){
 const renderBeforeDailyPlan=render;render=function(){renderBeforeDailyPlan();renderDailyPlan();};
 const dailyStyle=node('style');dailyStyle.textContent='#lessons{display:block}.daily-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:16px 0}.daily-item{padding:18px;min-width:0;overflow-wrap:anywhere}.daily-item h3{margin:12px 0;font-size:18px}.daily-item small{font-size:11px;color:#536b49}.daily-item summary{cursor:pointer;min-height:36px;color:#315c43}.daily-item p{line-height:1.7}.daily-item .outline{margin-top:10px;min-height:40px}.daily-item .daily-complete[aria-pressed=true]{background:#e5efdc;color:#254e35}.daily-progress{line-height:1.7;font-weight:600;color:#315c43}@media(max-width:600px){.daily-grid{grid-template-columns:1fr}}';document.head.append(dailyStyle);
 renderDailyPlan();document.querySelector('.release-label').textContent+=' · Günlük plan 24+';
+
+const grammarLessons=[
+  {
+    "id": "grammar-1",
+    "level": "A1",
+    "title": "To Be · am, is, are",
+    "body": "Be kimlik, durum ve yer bildirir. I ile am; he/she/it ile is; you/we/they ile are kullanılır. Olumsuzda not eklenir, soruda be öznenin önüne gelir. Türkçede “evdeyim” derken İngilizcede be gerekir. Do you are değil Are you kullan. Olumlu kısa cevap Yes, I am olur; Yes, I'm olmaz.",
+    "formula": "Özne + am/is/are • Are you ready?",
+    "examples": [
+      [
+        "I am a teacher.",
+        "Ben öğretmenim."
+      ],
+      [
+        "They aren't at home.",
+        "Onlar evde değil."
+      ]
+    ],
+    "source": [
+      "British Council · A1–A2",
+      "https://learnenglish.britishcouncil.org/free-resources/grammar/a1-a2"
+    ],
+    "questions": [
+      {
+        "prompt": "I ___ tired.",
+        "options": [
+          "am",
+          "is",
+          "are"
+        ],
+        "correct": 0,
+        "explanation": "I öznesi am alır."
+      },
+      {
+        "prompt": "___ they ready?",
+        "options": [
+          "Is",
+          "Do",
+          "Are"
+        ],
+        "correct": 2,
+        "explanation": "They ile are öznenin önüne gelir."
+      }
+    ]
+  },
+  {
+    "id": "grammar-2",
+    "level": "A1",
+    "title": "Zamirler · Subject ve Object",
+    "body": "Özne zamirleri I, you, he, she, it, we, they; nesne karşılıkları me, you, him, her, it, us, them biçimindedir. Özne işi yapar; nesne eylemden etkilenir veya edattan sonra gelir. I her zaman büyük yazılır. You hem sen hem siz olabilir. With I değil with me kullan.",
+    "formula": "Özne + fiil + nesne • for/with + nesne zamiri",
+    "examples": [
+      [
+        "She calls me.",
+        "O beni arar."
+      ],
+      [
+        "We work with them.",
+        "Onlarla çalışırız."
+      ]
+    ],
+    "source": [
+      "British Council · A1–A2",
+      "https://learnenglish.britishcouncil.org/free-resources/grammar/a1-a2"
+    ],
+    "questions": [
+      {
+        "prompt": "I can see ___. (onları)",
+        "options": [
+          "they",
+          "we",
+          "them"
+        ],
+        "correct": 2,
+        "explanation": "Fiilin nesnesi them olur."
+      },
+      {
+        "prompt": "This is for ___. (biz)",
+        "options": [
+          "our",
+          "us",
+          "we"
+        ],
+        "correct": 1,
+        "explanation": "For edatından sonra nesne zamiri us gerekir."
+      }
+    ]
+  },
+  {
+    "id": "grammar-3",
+    "level": "A1",
+    "title": "İyelik Sıfatları",
+    "body": "My, your, his, her, its, our, their isimden önce aitlik bildirir. His/her seçimini sahip olan kişi belirler. Tek başına kullanmak için mine/yours gibi zamirler gerekir. Its aitliktir; it's it is/it has kısaltmasıdır. My is blue yerine My bag is blue veya Mine is blue de.",
+    "formula": "my/your/his/her/its/our/their + isim",
+    "examples": [
+      [
+        "This is my bag.",
+        "Bu benim çantam."
+      ],
+      [
+        "Their house is small.",
+        "Onların evi küçük."
+      ]
+    ],
+    "source": [
+      "British Council · A1–A2",
+      "https://learnenglish.britishcouncil.org/free-resources/grammar/a1-a2"
+    ],
+    "questions": [
+      {
+        "prompt": "The cat eats ___ food.",
+        "options": [
+          "it",
+          "its",
+          "it's"
+        ],
+        "correct": 1,
+        "explanation": "Aitlik bildiren its kesme işareti almaz."
+      },
+      {
+        "prompt": "They love ___ school.",
+        "options": [
+          "their",
+          "them",
+          "they"
+        ],
+        "correct": 0,
+        "explanation": "İsim önünde their gerekir."
+      }
+    ]
+  },
+  {
+    "id": "grammar-4",
+    "level": "A1",
+    "title": "Article'lar · a, an, the",
+    "body": "A/an tekil sayılabilen bir örneği tanıtır. Seçim harfe değil sese bağlıdır: a university, an hour. The hangi şey olduğu bilindiğinde kullanılır. Genel çoğullar ve sayılamayanlar çoğunlukla articlesızdır: Cats sleep; Water is essential. Mesleklerde a/an gerekir. Belirli bir sudan bahsedersek the water diyebiliriz.",
+    "formula": "a + ünsüz ses • an + ünlü ses • the + belirli isim",
+    "examples": [
+      [
+        "She is an engineer.",
+        "O mühendis."
+      ],
+      [
+        "I bought a book. The book is interesting.",
+        "Bir kitap aldım. Kitap ilginç."
+      ]
+    ],
+    "source": [
+      "British Council · A1–A2",
+      "https://learnenglish.britishcouncil.org/free-resources/grammar/a1-a2"
+    ],
+    "questions": [
+      {
+        "prompt": "We waited for ___ hour.",
+        "options": [
+          "an",
+          "a",
+          "—"
+        ],
+        "correct": 0,
+        "explanation": "Hour ünlü sesle başlar; an alır."
+      },
+      {
+        "prompt": "I saw a cat. ___ cat was black.",
+        "options": [
+          "A",
+          "An",
+          "The"
+        ],
+        "correct": 2,
+        "explanation": "İkinci cümlede kedi artık biliniyor."
+      }
+    ]
+  },
+  {
+    "id": "grammar-5",
+    "level": "A1",
+    "title": "Sayılabilen / Sayılamayan İsimler",
+    "body": "Sayılabilenler an apple/two apples gibi tekil ve çoğul olur. Water, advice, information bu anlamlarında doğrudan sayı ve a/an almaz. Many çoğul sayılabilenlerle, much sayılamayanlarla kullanılır. Some olumlu; any soru/olumsuz cümlelerde yaygındır. Birimi sayabiliriz: two bottles of water. Two coffees iki porsiyon kahve anlamına gelebilir.",
+    "formula": "many books • much water • a piece of advice",
+    "examples": [
+      [
+        "We need some water.",
+        "Biraz suya ihtiyacımız var."
+      ],
+      [
+        "She gave me two pieces of advice.",
+        "Bana iki tavsiye verdi."
+      ]
+    ],
+    "source": [
+      "British Council · A1–A2",
+      "https://learnenglish.britishcouncil.org/free-resources/grammar/a1-a2"
+    ],
+    "questions": [
+      {
+        "prompt": "How ___ apples do we need?",
+        "options": [
+          "much",
+          "a",
+          "many"
+        ],
+        "correct": 2,
+        "explanation": "Apples sayılabilen çoğuldur."
+      },
+      {
+        "prompt": "She gave me some ___.",
+        "options": [
+          "an advice",
+          "advice",
+          "advices"
+        ],
+        "correct": 1,
+        "explanation": "Advice bu anlamda sayılamaz; çoğul -s almaz."
+      }
+    ]
+  },
+  {
+    "id": "grammar-6",
+    "level": "A1",
+    "title": "Simple Present Tense",
+    "body": "Alışkanlık, tekrar ve genel doğruları anlatır. I/you/we/they yalın fiil; he/she/it genellikle -s alır. Study → studies, watch → watches, have → has olur. Olumsuz don't/doesn't, soru do/does ile kurulur. Does varsa ana fiil yalındır. Be bu kurala değil kendi soru/olumsuz biçimlerine uyar.",
+    "formula": "She works. • She doesn't work. • Does she work?",
+    "examples": [
+      [
+        "I walk to school every day.",
+        "Her gün okula yürürüm."
+      ],
+      [
+        "He doesn't drink coffee.",
+        "O kahve içmez."
+      ]
+    ],
+    "source": [
+      "British Council · A1–A2",
+      "https://learnenglish.britishcouncil.org/free-resources/grammar/a1-a2"
+    ],
+    "questions": [
+      {
+        "prompt": "She ___ English every day.",
+        "options": [
+          "studying",
+          "studies",
+          "study"
+        ],
+        "correct": 1,
+        "explanation": "Üçüncü tekilde studies gerekir."
+      },
+      {
+        "prompt": "Does he ___ here?",
+        "options": [
+          "work",
+          "works",
+          "working"
+        ],
+        "correct": 0,
+        "explanation": "Does sonrası yalın fiil gelir."
+      }
+    ]
+  },
+  {
+    "id": "grammar-7",
+    "level": "A1",
+    "title": "Present Continuous Tense",
+    "body": "Am/is/are + V-ing şimdi süren eylemleri ve geçici durumları anlatır. Kesinleşmiş gelecek düzenlemeleri için de kullanılır. Olumsuzda be + not, soruda be öne gelir. Make → making, run → running olur. Know/want gibi durum fiilleri temel anlamlarında genellikle continuous kullanılmaz. I reading değil I am reading de.",
+    "formula": "am/is/are + V-ing • Is she working?",
+    "examples": [
+      [
+        "I am reading now.",
+        "Şu an okuyorum."
+      ],
+      [
+        "We're staying here this week.",
+        "Bu hafta burada kalıyoruz."
+      ]
+    ],
+    "source": [
+      "British Council · A1–A2",
+      "https://learnenglish.britishcouncil.org/free-resources/grammar/a1-a2"
+    ],
+    "questions": [
+      {
+        "prompt": "They ___ playing outside.",
+        "options": [
+          "are",
+          "is",
+          "am"
+        ],
+        "correct": 0,
+        "explanation": "They ile are kullanılır."
+      },
+      {
+        "prompt": "I ___ the answer. (bilmek)",
+        "options": [
+          "am knowing",
+          "knowing",
+          "know"
+        ],
+        "correct": 2,
+        "explanation": "Know burada durum fiilidir; simple present kullanılır."
+      }
+    ]
+  },
+  {
+    "id": "grammar-8",
+    "level": "A1",
+    "title": "Edatlar · in, on, at",
+    "body": "Zamanda in ay/yıl/dönem; on gün/tarih; at saat içindir. In the morning ama at night denir. Next/last/this/every ile başlayan birçok zaman ifadesi edatsızdır. Yerde in alanın içinde, on yüzeyde, at nokta veya faaliyet yerinde anlamı verir. At school ile in the school arasında faaliyet/bina vurgusu farkı olabilir.",
+    "formula": "in May • on Friday • at nine • on the table",
+    "examples": [
+      [
+        "The keys are on the desk.",
+        "Anahtarlar masanın üzerinde."
+      ],
+      [
+        "We meet at nine.",
+        "Dokuzda buluşuruz."
+      ]
+    ],
+    "source": [
+      "British Council · A1–A2",
+      "https://learnenglish.britishcouncil.org/free-resources/grammar/a1-a2"
+    ],
+    "questions": [
+      {
+        "prompt": "My birthday is ___ June.",
+        "options": [
+          "on",
+          "at",
+          "in"
+        ],
+        "correct": 2,
+        "explanation": "Ay adlarında in kullanılır."
+      },
+      {
+        "prompt": "The meeting is ___ Monday morning.",
+        "options": [
+          "at",
+          "on",
+          "in"
+        ],
+        "correct": 1,
+        "explanation": "Belirli gün içeren ifade on alır."
+      }
+    ]
+  },
+  {
+    "id": "grammar-9",
+    "level": "A1",
+    "title": "This, That, These, Those",
+    "body": "This yakındaki tekili, that uzaktaki tekili; these yakındaki çoğulu, those uzaktaki çoğulu gösterir. Yakınlık fiziksel veya bağlamsal olabilir. Tek başına zamir veya isim önünde belirleyici olarak kullanılır. Tekiller is, çoğullar are ile eşleşir. These book değil these books de.",
+    "formula": "this/that + tekil • these/those + çoğul",
+    "examples": [
+      [
+        "This is my cup.",
+        "Bu benim fincanım."
+      ],
+      [
+        "Those houses are old.",
+        "Şu evler eski."
+      ]
+    ],
+    "source": [
+      "British Council · A1–A2",
+      "https://learnenglish.britishcouncil.org/free-resources/grammar/a1-a2"
+    ],
+    "questions": [
+      {
+        "prompt": "___ book here is mine.",
+        "options": [
+          "Those",
+          "This",
+          "These"
+        ],
+        "correct": 1,
+        "explanation": "Book tekil ve here yakındır."
+      },
+      {
+        "prompt": "___ mountains over there are high.",
+        "options": [
+          "Those",
+          "That",
+          "This"
+        ],
+        "correct": 0,
+        "explanation": "Uzaktaki çoğullar those ile gösterilir."
+      }
+    ]
+  },
+  {
+    "id": "grammar-10",
+    "level": "A1",
+    "title": "There is / There are",
+    "body": "Bir yerde bir şeyin varlığını bildirir. Tekil ve sayılamayan isimle is; çoğulla are gelir. Olumsuz isn't/aren't; soru Is there / Are there olur. Any soru/olumsuzlarda yaygındır. There is a book yeni varlığı tanıtır; The book is on the table bilinen kitabın yerini belirtir.",
+    "formula": "There is a chair. • There are chairs. • Is there any water?",
+    "examples": [
+      [
+        "There is a park nearby.",
+        "Yakında bir park var."
+      ],
+      [
+        "There aren't any eggs.",
+        "Hiç yumurta yok."
+      ]
+    ],
+    "source": [
+      "British Council · A1–A2",
+      "https://learnenglish.britishcouncil.org/free-resources/grammar/a1-a2"
+    ],
+    "questions": [
+      {
+        "prompt": "There ___ three chairs.",
+        "options": [
+          "are",
+          "is",
+          "am"
+        ],
+        "correct": 0,
+        "explanation": "Three chairs çoğuldur."
+      },
+      {
+        "prompt": "___ there any milk?",
+        "options": [
+          "Are",
+          "Do",
+          "Is"
+        ],
+        "correct": 2,
+        "explanation": "Milk sayılamayan isimdir; Is there gerekir."
+      }
+    ]
+  },
+  {
+    "id": "grammar-11",
+    "level": "A1",
+    "title": "Can / Can't",
+    "body": "Can yetenek, izin ve genel olasılık anlatır. Ardından yalın fiil gelir; üçüncü tekilde -s almaz. Olumsuz cannot/can't; soru Can + özne + fiil olur. Can I sit here? izin; It can be cold here genel olasılıktır. Belirli olay için belirsiz tahminde may/might daha uygundur. She cans ve can to swim kullanma.",
+    "formula": "can/can't + yalın fiil • Can you help?",
+    "examples": [
+      [
+        "She can speak Turkish.",
+        "Türkçe konuşabilir."
+      ],
+      [
+        "Can I open the window?",
+        "Pencereyi açabilir miyim?"
+      ]
+    ],
+    "source": [
+      "British Council · A1–A2",
+      "https://learnenglish.britishcouncil.org/free-resources/grammar/a1-a2"
+    ],
+    "questions": [
+      {
+        "prompt": "He can ___ well.",
+        "options": [
+          "swims",
+          "to swim",
+          "swim"
+        ],
+        "correct": 2,
+        "explanation": "Can sonrası yalın fiil gelir."
+      },
+      {
+        "prompt": "She ___ drive. (yapamıyor)",
+        "options": [
+          "cans not",
+          "can't",
+          "doesn't can"
+        ],
+        "correct": 1,
+        "explanation": "Can kendi olumsuz biçimini alır, do gerekmez."
+      }
+    ]
+  },
+  {
+    "id": "grammar-12",
+    "level": "A1",
+    "title": "Wh- Soruları",
+    "body": "What ne, where nerede/nereye, when ne zaman, who kim, why neden, how nasıl; which hangisi, whose kimin demektir. How much miktar/fiyat, how many sayılabilen sayı sorar. Genel düzen soru sözcüğü + yardımcı + özne + fiildir. Who özneyi soruyorsa do gerekmez: Who lives here? Nesneyi sorarsa Who do you know? olur.",
+    "formula": "Where do you live? • Whose bag is this? • Who called?",
+    "examples": [
+      [
+        "When do you start work?",
+        "İşe ne zaman başlarsın?"
+      ],
+      [
+        "Who teaches English?",
+        "Kim İngilizce öğretiyor?"
+      ]
+    ],
+    "source": [
+      "British Council · A1–A2",
+      "https://learnenglish.britishcouncil.org/free-resources/grammar/a1-a2"
+    ],
+    "questions": [
+      {
+        "prompt": "___ bag is this? It's Ece's.",
+        "options": [
+          "Where",
+          "Whose",
+          "Who"
+        ],
+        "correct": 1,
+        "explanation": "Aitliği whose sorar."
+      },
+      {
+        "prompt": "Who ___ here? (özne sorusu)",
+        "options": [
+          "works",
+          "do work",
+          "does works"
+        ],
+        "correct": 0,
+        "explanation": "Who özne olduğunda works doğrudan gelir."
+      }
+    ]
+  },
+  {
+    "id": "grammar-13",
+    "level": "A2",
+    "title": "Simple Past Tense",
+    "body": "Geçmişte tamamlanan olaylarda düzenli fiiller -ed alır; go → went gibi düzensizler öğrenilir. Yesterday/last week bitmiş zamanları gösterir. Olumsuz didn't + yalın fiil; soru Did + özne + yalın fiil olur. Be geçmişte I/he/she/it için was, you/we/they için were olur ve did almaz. Did you went değil Did you go de.",
+    "formula": "She went. • She didn't go. • Did she go? • Was she tired?",
+    "examples": [
+      [
+        "We visited İzmir last year.",
+        "Geçen yıl İzmir'i ziyaret ettik."
+      ],
+      [
+        "Were you at home?",
+        "Evde miydin?"
+      ]
+    ],
+    "source": [
+      "British Council · A1–A2",
+      "https://learnenglish.britishcouncil.org/free-resources/grammar/a1-a2"
+    ],
+    "questions": [
+      {
+        "prompt": "Yesterday I ___ to school.",
+        "options": [
+          "went",
+          "go",
+          "gone"
+        ],
+        "correct": 0,
+        "explanation": "Go fiilinin geçmişi went olur."
+      },
+      {
+        "prompt": "She didn't ___ the film.",
+        "options": [
+          "watched",
+          "watching",
+          "watch"
+        ],
+        "correct": 2,
+        "explanation": "Didn't sonrasında yalın fiil gerekir."
+      }
+    ]
+  },
+  {
+    "id": "grammar-14",
+    "level": "A2",
+    "title": "Past Continuous Tense",
+    "body": "Was/were + V-ing geçmişte bir anda sürmekte olan eylemi anlatır. Süren arka plan continuous, araya giren kısa olay simple past olabilir. While çoğunlukla süren arka planı tanıtır; eş zamanlı iki etkinlik de continuous olabilir. Olumsuz ve soru was/were ile kurulur. I was study değil I was studying de.",
+    "formula": "was/were + V-ing • Were they working?",
+    "examples": [
+      [
+        "At eight, I was studying.",
+        "Sekizde ders çalışıyordum."
+      ],
+      [
+        "I was reading when the phone rang.",
+        "Telefon çaldığında okuyordum."
+      ]
+    ],
+    "source": [
+      "British Council · A1–A2",
+      "https://learnenglish.britishcouncil.org/free-resources/grammar/a1-a2"
+    ],
+    "questions": [
+      {
+        "prompt": "We were ___ when he arrived.",
+        "options": [
+          "eat",
+          "ate",
+          "eating"
+        ],
+        "correct": 2,
+        "explanation": "Were sonrası -ing gerekir."
+      },
+      {
+        "prompt": "I was reading when the phone ___.",
+        "options": [
+          "was ring",
+          "rang",
+          "ring"
+        ],
+        "correct": 1,
+        "explanation": "Araya giren kısa olay simple past olur."
+      }
+    ]
+  },
+  {
+    "id": "grammar-15",
+    "level": "A2",
+    "title": "Gelecek · Will / Be Going To",
+    "body": "Will anlık karar, teklif, söz ve tahminde; going to önceden alınmış plan/niyette ve mevcut kanıta dayalı tahminde yaygındır. Bu kesin ayrım değil anlam eğilimidir; iki yapı bazen mümkündür. Will sonrası yalın fiil, going to öncesi am/is/are gerekir. When/if cümleciklerinde gelecek anlamı olsa da genellikle present simple kullanılır.",
+    "formula": "will + fiil • am/is/are going to + fiil",
+    "examples": [
+      [
+        "I'll carry that bag.",
+        "O çantayı taşıyayım."
+      ],
+      [
+        "We're going to move next month.",
+        "Gelecek ay taşınmayı planlıyoruz."
+      ]
+    ],
+    "source": [
+      "British Council · A1–A2",
+      "https://learnenglish.britishcouncil.org/free-resources/grammar/a1-a2"
+    ],
+    "questions": [
+      {
+        "prompt": "She ___ going to study tonight.",
+        "options": [
+          "does",
+          "is",
+          "will"
+        ],
+        "correct": 1,
+        "explanation": "Going to öncesinde is gerekir."
+      },
+      {
+        "prompt": "I'll call when I ___.",
+        "options": [
+          "arrive",
+          "will arrive",
+          "arriving"
+        ],
+        "correct": 0,
+        "explanation": "When zaman cümleciğinde present simple kullanılır."
+      }
+    ]
+  },
+  {
+    "id": "grammar-16",
+    "level": "A2",
+    "title": "Comparative ve Superlative",
+    "body": "Comparative iki şeyi karşılaştırır: taller/more expensive. Superlative grubun en üst derecesidir: the tallest/the most expensive. Kısa sıfatlar çoğunlukla -er/-est, uzunlar more/most alır. Happy → happier/happiest, good → better/best, bad → worse/worst olur. Comparative sonrası than; eşitlikte as + sıfat + as gelir. More better kullanma.",
+    "formula": "bigger than • the biggest • as useful as",
+    "examples": [
+      [
+        "This bag is cheaper than that one.",
+        "Bu çanta diğerinden daha ucuz."
+      ],
+      [
+        "She is the tallest student in our class.",
+        "Sınıfımızdaki en uzun öğrenci o."
+      ]
+    ],
+    "source": [
+      "British Council · A1–A2",
+      "https://learnenglish.britishcouncil.org/free-resources/grammar/a1-a2"
+    ],
+    "questions": [
+      {
+        "prompt": "Her result is ___ than mine.",
+        "options": [
+          "better",
+          "gooder",
+          "best"
+        ],
+        "correct": 0,
+        "explanation": "Good comparative biçimi better olur."
+      },
+      {
+        "prompt": "It's the ___ day of the year.",
+        "options": [
+          "hotter",
+          "more hot",
+          "hottest"
+        ],
+        "correct": 2,
+        "explanation": "Yılın en üst derecesi hottest olur."
+      }
+    ]
+  },
+  {
+    "id": "grammar-17",
+    "level": "A2",
+    "title": "Modallar · Must, Have to, Should, May, Might",
+    "body": "Must/have to zorunluluk, should tavsiye, may/might olasılık; may ayrıca izin anlatır. Must konuşanın güçlü yargısında, have to dış koşullarda yaygındır ama kesin ayrım değildir. Mustn't yasak; don't have to gerekli değil demektir. Modallardan sonra yalın fiil gelir. Have to özne/zamana göre has to/had to olur. Geçmiş zorunluluk genellikle had to ile anlatılır.",
+    "formula": "must/should/may/might + fiil • has to/had to + fiil",
+    "examples": [
+      [
+        "You mustn't park here.",
+        "Buraya park etmek yasak."
+      ],
+      [
+        "It might snow tonight.",
+        "Bu gece kar yağabilir."
+      ]
+    ],
+    "source": [
+      "British Council · A1–A2",
+      "https://learnenglish.britishcouncil.org/free-resources/grammar/a1-a2"
+    ],
+    "questions": [
+      {
+        "prompt": "You ___ smoke here. It's forbidden.",
+        "options": [
+          "don't have to",
+          "may",
+          "mustn't"
+        ],
+        "correct": 2,
+        "explanation": "Forbidden yasak demektir; mustn't gerekir."
+      },
+      {
+        "prompt": "We ___ leave early yesterday. (zorundaydık)",
+        "options": [
+          "have to",
+          "had to",
+          "must"
+        ],
+        "correct": 1,
+        "explanation": "Geçmiş zorunluluk had to olur."
+      }
+    ]
+  },
+  {
+    "id": "grammar-18",
+    "level": "A2",
+    "title": "Zarflar ve Sıklık Zarfları",
+    "body": "Zarflar eylemin nasıl/ne zaman/ne sıklıkta olduğunu açıklar. Birçoğu sıfat + -ly biçimindedir: carefully. Good → well düzensiz; fast/hard aynı biçimdedir. Hardly neredeyse hiç demektir. Always/usually/often/sometimes/rarely/never çoğunlukla ana fiilden önce, be fiilinden sonra gelir. Never zaten olumsuzdur; don't ile temel kullanımda birleşmez.",
+    "formula": "She usually walks. • She is usually early.",
+    "examples": [
+      [
+        "He drives carefully.",
+        "Dikkatli araba kullanır."
+      ],
+      [
+        "I never drink coffee.",
+        "Hiç kahve içmem."
+      ]
+    ],
+    "source": [
+      "British Council · A1–A2",
+      "https://learnenglish.britishcouncil.org/free-resources/grammar/a1-a2"
+    ],
+    "questions": [
+      {
+        "prompt": "She sings very ___.",
+        "options": [
+          "goodly",
+          "well",
+          "good"
+        ],
+        "correct": 1,
+        "explanation": "Eylemi belirten zarf well olur."
+      },
+      {
+        "prompt": "He works ___. (çok çalışır)",
+        "options": [
+          "hard",
+          "hardly",
+          "hardful"
+        ],
+        "correct": 0,
+        "explanation": "Hard yoğun çalışmayı; hardly neredeyse hiç anlamını verir."
+      }
+    ]
+  },
+  {
+    "id": "grammar-19",
+    "level": "A2",
+    "title": "Bağlaçlar · Because, So, But, And, Although",
+    "body": "And ekleme, but karşıtlık, because neden, so sonuç belirtir. Although beklentinin tersini anlatır ve ardından özne-fiilli cümle gelir. Because of ise isim grubu alır. Başta gelen cümlecik virgülle ayrılabilir. Temel bir cümlede although ile but veya because ile so gereksiz yere birlikte kullanılmaz.",
+    "formula": "because + cümle • because of + isim • although + cümle",
+    "examples": [
+      [
+        "I stayed home because I was ill.",
+        "Hasta olduğum için evde kaldım."
+      ],
+      [
+        "Although she was tired, she helped us.",
+        "Yorgun olmasına rağmen yardım etti."
+      ]
+    ],
+    "source": [
+      "British Council · A1–A2",
+      "https://learnenglish.britishcouncil.org/free-resources/grammar/a1-a2"
+    ],
+    "questions": [
+      {
+        "prompt": "It was cold, ___ I wore a coat.",
+        "options": [
+          "so",
+          "because of",
+          "although of"
+        ],
+        "correct": 0,
+        "explanation": "İkinci bölüm sonuçtur; so gerekir."
+      },
+      {
+        "prompt": "We stayed inside because ___ the storm.",
+        "options": [
+          "to",
+          "for",
+          "of"
+        ],
+        "correct": 2,
+        "explanation": "İsim grubundan önce because of gerekir."
+      }
+    ]
+  },
+  {
+    "id": "grammar-20",
+    "level": "A2",
+    "title": "Need to / Don't Have to",
+    "body": "Need to ihtiyaç/gereklilik; have to zorunluluk anlatır. Don't need to ve don't have to eylemin gerekli olmadığını belirtir; yasak değildir. He/she/it ile needs to/doesn't need to/has to kullanılır. Soru do/does ile kurulur. Need isim de alır: I need water; fiil alırsa bu yapıda to gerekir. Doesn't needs değil doesn't need kullan.",
+    "formula": "need(s) to + fiil • don't/doesn't have to + fiil",
+    "examples": [
+      [
+        "I need to charge my phone.",
+        "Telefonumu şarj etmeliyim."
+      ],
+      [
+        "You don't have to come early.",
+        "Erken gelmek zorunda değilsin."
+      ]
+    ],
+    "source": [
+      "British Council · A1–A2",
+      "https://learnenglish.britishcouncil.org/free-resources/grammar/a1-a2"
+    ],
+    "questions": [
+      {
+        "prompt": "Does he ___ to bring a pen?",
+        "options": [
+          "needs",
+          "needed",
+          "need"
+        ],
+        "correct": 2,
+        "explanation": "Does sonrasında yalın need gerekir."
+      },
+      {
+        "prompt": "You don't have to attend. Anlamı?",
+        "options": [
+          "Katılmalısın.",
+          "Katılman zorunlu değil.",
+          "Katılman yasak."
+        ],
+        "correct": 1,
+        "explanation": "Yasak değil, gerekli olmama bildirir."
+      }
+    ]
+  },
+  {
+    "id": "grammar-21",
+    "level": "B1",
+    "title": "Present Perfect Tense",
+    "body": "Have/has + V3 geçmişi şimdiyle bağlantılı anlatır: deneyim, mevcut sonuç ve bitmemiş zaman. Yesterday gibi bitmiş belirli zamanda simple past tercih edilir. Ever/never deneyim, just yakın geçmiş, already tamamlanma, yet soru/olumsuzda şu ana kadar anlamı verir. For süre, since başlangıçtır. Been to gidip dönme; gone to henüz dönmemeyi anlatabilir.",
+    "formula": "have/has + V3 • Have you ever ...?",
+    "examples": [
+      [
+        "I have lost my keys.",
+        "Anahtarlarımı kaybettim; şimdi bulamıyorum."
+      ],
+      [
+        "She has lived here since 2020.",
+        "2020'den beri burada yaşıyor."
+      ]
+    ],
+    "source": [
+      "British Council · B1–B2",
+      "https://learnenglish.britishcouncil.org/free-resources/grammar/b1-b2"
+    ],
+    "questions": [
+      {
+        "prompt": "I have lived here ___ five years.",
+        "options": [
+          "ago",
+          "for",
+          "since"
+        ],
+        "correct": 1,
+        "explanation": "Süre for ile verilir."
+      },
+      {
+        "prompt": "I ___ him yesterday.",
+        "options": [
+          "saw",
+          "have seen",
+          "has seen"
+        ],
+        "correct": 0,
+        "explanation": "Yesterday bitmiş zamandır; simple past gerekir."
+      }
+    ]
+  },
+  {
+    "id": "grammar-22",
+    "level": "B1",
+    "title": "Present Perfect Continuous",
+    "body": "Have/has been + V-ing geçmişten şimdiye süren etkinliği veya yeni bitmiş etkinliğin etkisini vurgular. How long/for/since ile yaygındır. Simple perfect tamamlanan sonuç ve miktarı; continuous süre ve süreci öne çıkarır. Know/own gibi durum fiillerinde simple tercih edilir. I've written three emails sonuç; I've been writing all morning süreçtir.",
+    "formula": "have/has been + V-ing",
+    "examples": [
+      [
+        "I have been studying for two hours.",
+        "İki saattir çalışıyorum."
+      ],
+      [
+        "She's been running, so she's out of breath.",
+        "Koştuğu için nefes nefese."
+      ]
+    ],
+    "source": [
+      "British Council · B1–B2",
+      "https://learnenglish.britishcouncil.org/free-resources/grammar/b1-b2"
+    ],
+    "questions": [
+      {
+        "prompt": "She has been ___ all morning.",
+        "options": [
+          "working",
+          "worked",
+          "work"
+        ],
+        "correct": 0,
+        "explanation": "Been sonrasında -ing gerekir."
+      },
+      {
+        "prompt": "We ___ each other for years.",
+        "options": [
+          "have been knowing",
+          "are knowing",
+          "have known"
+        ],
+        "correct": 2,
+        "explanation": "Know durum fiilidir; simple perfect kullanılır."
+      }
+    ]
+  },
+  {
+    "id": "grammar-23",
+    "level": "B1",
+    "title": "Past Perfect Tense",
+    "body": "Had + V3 geçmişte bir referans noktasından önce tamamlanan olayı anlatır. Tüm öznelerde had aynıdır. After/before sıralamayı açıkça gösteriyorsa past perfect her zaman şart değildir; önce tamamlanmayı vurgular. Olumsuz hadn't, soru Had + özne + V3 olur. Had went değil had gone kullan.",
+    "formula": "Önce had + V3 • Sonra simple past",
+    "examples": [
+      [
+        "When I arrived, the train had left.",
+        "Vardığımda tren gitmişti."
+      ],
+      [
+        "She hadn't eaten before the meeting.",
+        "Toplantıdan önce yememişti."
+      ]
+    ],
+    "source": [
+      "British Council · B1–B2",
+      "https://learnenglish.britishcouncil.org/free-resources/grammar/b1-b2"
+    ],
+    "questions": [
+      {
+        "prompt": "We hadn't ___ the news.",
+        "options": [
+          "hear",
+          "hearing",
+          "heard"
+        ],
+        "correct": 2,
+        "explanation": "Had sonrasında V3 heard gerekir."
+      },
+      {
+        "prompt": "I had finished dinner before he arrived. Önce ne oldu?",
+        "options": [
+          "İkisi aynı anda oldu.",
+          "Yemeği bitirdim.",
+          "O geldi."
+        ],
+        "correct": 1,
+        "explanation": "Had finished önce tamamlanan olayı gösterir."
+      }
+    ]
+  },
+  {
+    "id": "grammar-24",
+    "level": "B1",
+    "title": "Passive Voice",
+    "body": "Edilgende odak yapan değil iş/etkilenen şeydir. Etkenin nesnesi özne olur, be uygun zamana çekilir ve ana fiil V3 olur. Yapan önemliyse by ile eklenir. Present is/are made; past was/were made; future will be made; perfect has/have been made. Arrive gibi nesnesiz fiiller normalde edilgen olmaz.",
+    "formula": "Özne + uygun be + V3 (+ by yapan)",
+    "examples": [
+      [
+        "English is spoken here.",
+        "Burada İngilizce konuşulur."
+      ],
+      [
+        "The bridge was built in 1998.",
+        "Köprü 1998'de yapıldı."
+      ]
+    ],
+    "source": [
+      "British Council · B1–B2",
+      "https://learnenglish.britishcouncil.org/free-resources/grammar/b1-b2"
+    ],
+    "questions": [
+      {
+        "prompt": "These cars ___ in Germany.",
+        "options": [
+          "is made",
+          "are made",
+          "make"
+        ],
+        "correct": 1,
+        "explanation": "Çoğul özneyle edilgen are made olur."
+      },
+      {
+        "prompt": "The letter will ___ sent tomorrow.",
+        "options": [
+          "be",
+          "been",
+          "being"
+        ],
+        "correct": 0,
+        "explanation": "Will sonrasında yalın be gerekir."
+      }
+    ]
+  },
+  {
+    "id": "grammar-25",
+    "level": "B1",
+    "title": "Conditionals · 0, 1 ve 2",
+    "body": "Zero genel sonuç için if + present, present; first gerçekçi gelecek için if + present, will + fiil; second varsayımsal şimdi/gelecek için if + past, would + fiil kullanır. If baştaysa virgül gelir. Second içindeki past çoğu kez geçmişi değil gerçeğe uzaklığı gösterir. If I were you tavsiye kalıbıdır. Temel first conditional'da if will kullanma.",
+    "formula": "If it rains, we'll stay home. • If I had time, I would help.",
+    "examples": [
+      [
+        "If you heat ice, it melts.",
+        "Buzu ısıtırsan erir."
+      ],
+      [
+        "If I were you, I'd apologise.",
+        "Senin yerinde olsam özür dilerdim."
+      ]
+    ],
+    "source": [
+      "British Council · B1–B2",
+      "https://learnenglish.britishcouncil.org/free-resources/grammar/b1-b2"
+    ],
+    "questions": [
+      {
+        "prompt": "If it rains tomorrow, we ___ home.",
+        "options": [
+          "will stay",
+          "would stay",
+          "stayed"
+        ],
+        "correct": 0,
+        "explanation": "Olası gelecek first conditional olur."
+      },
+      {
+        "prompt": "If I had more time, I ___ more.",
+        "options": [
+          "will read",
+          "read yesterday",
+          "would read"
+        ],
+        "correct": 2,
+        "explanation": "Varsayımsal şimdi would ister."
+      }
+    ]
+  },
+  {
+    "id": "grammar-26",
+    "level": "B1",
+    "title": "Phrasal Verbs",
+    "body": "Fiil ve parçacık yeni anlam oluşturabilir: give up vazgeçmek, look after bakımını üstlenmek. Anlam her zaman parçaların toplamı değildir. Ayrılabilenlerde isim iki konumda olabilir: turn on the light / turn the light on. Zamir arada olmalıdır: turn it on. Ayrılmayanlarda nesne sonda: look after her. Bazıları nesnesiz: The car broke down.",
+    "formula": "turn it off • look after someone • give up doing",
+    "examples": [
+      [
+        "Please turn off the light.",
+        "Lütfen ışığı kapat."
+      ],
+      [
+        "She looks after her grandmother.",
+        "Büyükannesine bakıyor."
+      ]
+    ],
+    "source": [
+      "British Council · B1–B2",
+      "https://learnenglish.britishcouncil.org/free-resources/grammar/b1-b2"
+    ],
+    "questions": [
+      {
+        "prompt": "The light is on. Please turn ___.",
+        "options": [
+          "off it",
+          "it down on",
+          "it off"
+        ],
+        "correct": 2,
+        "explanation": "Ayrılabilen yapıda zamir araya girer."
+      },
+      {
+        "prompt": "Don't give ___! Keep trying.",
+        "options": [
+          "after",
+          "up",
+          "on"
+        ],
+        "correct": 1,
+        "explanation": "Give up vazgeçmek demektir."
+      }
+    ]
+  },
+  {
+    "id": "grammar-27",
+    "level": "B1",
+    "title": "Reported Speech",
+    "body": "Geçmiş said/told ile aktarımda present → past, will → would, present perfect → past perfect kayması yaygındır. Bilgi hâlâ doğruysa kayma şart olmayabilir. Zamir/zaman/yer ifadeleri bağlama göre değişir. Tell kişi nesnesi alır, say doğrudan almaz. Dolaylı soruda düz cümle sırası; evet/hayır sorusunda if/whether kullanılır.",
+    "formula": "She said (that) she was tired. • He asked where I lived.",
+    "examples": [
+      [
+        "She told me to wait.",
+        "Bana beklememi söyledi."
+      ],
+      [
+        "He asked if I worked there.",
+        "Orada çalışıp çalışmadığımı sordu."
+      ]
+    ],
+    "source": [
+      "British Council · B1–B2",
+      "https://learnenglish.britishcouncil.org/free-resources/grammar/b1-b2"
+    ],
+    "questions": [
+      {
+        "prompt": "She ___ me she was tired.",
+        "options": [
+          "spoke",
+          "told",
+          "said"
+        ],
+        "correct": 1,
+        "explanation": "Kişi nesnesi me ile told uygundur."
+      },
+      {
+        "prompt": "He asked where I ___.",
+        "options": [
+          "lived",
+          "did live?",
+          "do lived"
+        ],
+        "correct": 0,
+        "explanation": "Dolaylı soruda düz cümle sırası kullanılır."
+      }
+    ]
+  },
+  {
+    "id": "grammar-28",
+    "level": "B1",
+    "title": "Used to / Would",
+    "body": "Used to + yalın fiil geçmiş alışkanlık ve artık geçerli olmayan durumları anlatır. Would geçmiş bağlam kurulduğunda tekrarlanan eylemleri anlatabilir; temel kullanımda durumları anlatmaz. Soru Did ... use to?, olumsuz didn't use to olur. Be used to + isim/V-ing alışkın olmak; get used to alışmak demektir. Used to work ve be used to working farklıdır.",
+    "formula": "used to live • would play • be used to getting up early",
+    "examples": [
+      [
+        "I used to have long hair.",
+        "Eskiden saçım uzundu."
+      ],
+      [
+        "I'm used to working at night.",
+        "Gece çalışmaya alışkınım."
+      ]
+    ],
+    "source": [
+      "British Council · B1–B2",
+      "https://learnenglish.britishcouncil.org/free-resources/grammar/b1-b2"
+    ],
+    "questions": [
+      {
+        "prompt": "Did you ___ to play tennis?",
+        "options": [
+          "use",
+          "used",
+          "using"
+        ],
+        "correct": 0,
+        "explanation": "Did geçmiş zamanı taşır, use yalın kalır."
+      },
+      {
+        "prompt": "I'm used to ___ early.",
+        "options": [
+          "get up",
+          "got up",
+          "getting up"
+        ],
+        "correct": 2,
+        "explanation": "Be used to içindeki to edattır; -ing alır."
+      }
+    ]
+  },
+  {
+    "id": "grammar-29",
+    "level": "B2",
+    "title": "Third ve Mixed Conditionals",
+    "body": "Third conditional gerçekleşmemiş geçmiş koşul ve alternatif geçmiş sonuç için if + had V3, would have V3 kullanır. Could/might have olasılık/yeterlik nüansı verir. Mixed koşul ve sonucu farklı zamanlarda bağlar: geçmiş koşul → şimdiki sonuç veya şimdiki durum → geçmiş sonuç. Now gibi göstergeleri oku. If I would have known yerine If I had known de.",
+    "formula": "If + had V3, would have V3 • If + had V3, would + fiil (şimdi)",
+    "examples": [
+      [
+        "If we had left earlier, we would have caught the train.",
+        "Erken çıksaydık treni yakalardık."
+      ],
+      [
+        "If I had slept well, I wouldn't be tired now.",
+        "İyi uyusaydım şimdi yorgun olmazdım."
+      ]
+    ],
+    "source": [
+      "Cambridge · English Grammar Today",
+      "https://dictionary.cambridge.org/grammar/british-grammar/"
+    ],
+    "questions": [
+      {
+        "prompt": "If I had known, I ___ helped.",
+        "options": [
+          "will have",
+          "would to",
+          "would have"
+        ],
+        "correct": 2,
+        "explanation": "Geçmiş karşı-olgusal sonuç would have + V3 olur."
+      },
+      {
+        "prompt": "If I had saved more, I ___ rich now.",
+        "options": [
+          "will be",
+          "would be",
+          "would have been yesterday"
+        ],
+        "correct": 1,
+        "explanation": "Geçmiş koşulun şimdiki sonucu would be olur."
+      }
+    ]
+  },
+  {
+    "id": "grammar-30",
+    "level": "B2",
+    "title": "Relative Clauses",
+    "body": "Who insan, which şey, whose aitlik, where yer ilişkisi belirtir. That tanımlayıcı cümlecikte insan/şey için kullanılabilir. Tanımlayıcı hangi varlığı kastettiğimizi söyler, virgül almaz. Ek bilgi veren non-defining virgülle ayrılır; that kullanılmaz, zamir atılmaz. Tanımlayıcıda nesne zamiri atılabilir; özne zamiri atılamaz. Who he called me değil who called me de.",
+    "formula": "the woman who called • the book (that) I read",
+    "examples": [
+      [
+        "The student who won is my friend.",
+        "Kazanan öğrenci arkadaşım."
+      ],
+      [
+        "This is the town where I grew up.",
+        "Burası büyüdüğüm kasaba."
+      ]
+    ],
+    "source": [
+      "Cambridge · English Grammar Today",
+      "https://dictionary.cambridge.org/grammar/british-grammar/"
+    ],
+    "questions": [
+      {
+        "prompt": "A boy ___ father is a pilot lives here.",
+        "options": [
+          "which",
+          "whose",
+          "who"
+        ],
+        "correct": 1,
+        "explanation": "Aitlik ilişkisi whose ile verilir."
+      },
+      {
+        "prompt": "My car, ___ is old, still works.",
+        "options": [
+          "which",
+          "that",
+          "what"
+        ],
+        "correct": 0,
+        "explanation": "Virgüllü ek bilgi cümleciğinde which kullanılır; that olmaz."
+      }
+    ]
+  },
+  {
+    "id": "grammar-31",
+    "level": "B2",
+    "title": "Causatives · Have / Get Something Done",
+    "body": "Have/get + nesne + V3 işi başkasına yaptırmayı anlatır. Zamanı have/get taşır. Get konuşma diline daha yakın olabilir. Have + kişi + yalın fiil; get + kişi + to fiil birine iş yaptırmayı/işi yapmasını sağlamayı anlatır. Had her bag stolen gibi kullanım istenmeyen deneyim de olabilir; hırsızlığı ayarlamış olması gerekmez.",
+    "formula": "have/get + şey + V3 • have + kişi + fiil • get + kişi + to fiil",
+    "examples": [
+      [
+        "I had my hair cut yesterday.",
+        "Dün saçımı kestirdim."
+      ],
+      [
+        "She got her brother to help.",
+        "Kardeşinin yardım etmesini sağladı."
+      ]
+    ],
+    "source": [
+      "Cambridge · Have something done",
+      "https://dictionary.cambridge.org/grammar/british-grammar/have-something-done"
+    ],
+    "questions": [
+      {
+        "prompt": "I had my car ___.",
+        "options": [
+          "repaired",
+          "repair",
+          "repairing"
+        ],
+        "correct": 0,
+        "explanation": "Şey + V3 yapısında repaired gerekir."
+      },
+      {
+        "prompt": "She got him ___ the door.",
+        "options": [
+          "open",
+          "opened",
+          "to open"
+        ],
+        "correct": 2,
+        "explanation": "Get + kişi + to fiil kullanılır."
+      }
+    ]
+  },
+  {
+    "id": "grammar-32",
+    "level": "B2",
+    "title": "Noun Clauses",
+    "body": "İsim cümlecikleri özne, nesne veya tamamlayıcı olur. That yargı; whether/if evet-hayır belirsizliği; what/where/why/how bilgi aktarır. Dolaylı soruda düz cümle sırası kullanılır. Edattan hemen sonra veya to fiilden önce whether gerekir. That bazı nesne cümleciklerinde atılabilir ama her konumda değil. What she said gibi bütün bir bölüm özne olabilir.",
+    "formula": "I think (that) ... • I wonder whether ... • What she said matters.",
+    "examples": [
+      [
+        "I don't know where he lives.",
+        "Nerede yaşadığını bilmiyorum."
+      ],
+      [
+        "It depends on whether she agrees.",
+        "Kabul edip etmemesine bağlı."
+      ]
+    ],
+    "source": [
+      "Cambridge · English Grammar Today",
+      "https://dictionary.cambridge.org/grammar/british-grammar/"
+    ],
+    "questions": [
+      {
+        "prompt": "Do you know where she ___?",
+        "options": [
+          "does live?",
+          "is live",
+          "lives"
+        ],
+        "correct": 2,
+        "explanation": "Dolaylı soruda özne + fiil sırası gerekir."
+      },
+      {
+        "prompt": "It depends on ___ he agrees.",
+        "options": [
+          "that to",
+          "whether",
+          "if"
+        ],
+        "correct": 1,
+        "explanation": "Edattan sonra whether kullanılır."
+      }
+    ]
+  },
+  {
+    "id": "grammar-33",
+    "level": "B2",
+    "title": "Inversion · Temel Devrik Yapılar",
+    "body": "Never/rarely/seldom gibi olumsuz veya sınırlayıcı ifadeler başa vurgu için alındığında yardımcı fiil öznenin önüne gelir. Yardımcı yoksa do/does/did eklenir, ana fiil yalınlaşır. Not until bölümünde değil ana cümlede devriklik yapılır. Resmî/etkili anlatımda yaygındır. Her başa alınan zaman ifadesi devriklik gerektirmez.",
+    "formula": "Never + yardımcı + özne + fiil • Rarely does she ...",
+    "examples": [
+      [
+        "Never have I seen such a view.",
+        "Böyle manzarayı hiç görmedim."
+      ],
+      [
+        "Not until midnight did we finish.",
+        "Ancak gece yarısında bitirdik."
+      ]
+    ],
+    "source": [
+      "Cambridge · English Grammar Today",
+      "https://dictionary.cambridge.org/grammar/british-grammar/"
+    ],
+    "questions": [
+      {
+        "prompt": "Never ___ I seen such a thing.",
+        "options": [
+          "did have",
+          "have",
+          "I have"
+        ],
+        "correct": 1,
+        "explanation": "Never baştayken have öne gelir."
+      },
+      {
+        "prompt": "Rarely does she ___.",
+        "options": [
+          "complain",
+          "complains",
+          "complained"
+        ],
+        "correct": 0,
+        "explanation": "Does sonrası yalın fiil kullanılır."
+      }
+    ]
+  },
+  {
+    "id": "grammar-34",
+    "level": "B2",
+    "title": "Future Perfect / Future Perfect Continuous",
+    "body": "Future perfect gelecekte bir noktaya kadar tamamlanacak işi will have + V3 ile anlatır. Continuous aynı noktaya kadar süren etkinliği/süreyi will have been + V-ing ile vurgular. By Friday sınır belirtir. Sonuç/miktarda simple, süreçte continuous uygundur. Durum fiilleri çoğunlukla simple kalır. By the time sonrasında genellikle present simple kullanılır.",
+    "formula": "will have + V3 • will have been + V-ing",
+    "examples": [
+      [
+        "By Friday, I will have finished the report.",
+        "Cumaya kadar raporu bitirmiş olacağım."
+      ],
+      [
+        "By June, she will have been working here for ten years.",
+        "Haziranda burada on yıldır çalışıyor olacak."
+      ]
+    ],
+    "source": [
+      "Cambridge · English Grammar Today",
+      "https://dictionary.cambridge.org/grammar/british-grammar/"
+    ],
+    "questions": [
+      {
+        "prompt": "She will have been ___ for six hours.",
+        "options": [
+          "driving",
+          "driven",
+          "drive"
+        ],
+        "correct": 0,
+        "explanation": "Continuous yapıda -ing gerekir."
+      },
+      {
+        "prompt": "By the time he ___, we'll have left.",
+        "options": [
+          "will arrive",
+          "arriving",
+          "arrives"
+        ],
+        "correct": 2,
+        "explanation": "Zaman cümleciğinde present simple gerekir."
+      }
+    ]
+  },
+  {
+    "id": "grammar-35",
+    "level": "C1",
+    "title": "Dilekler ve Subjunctive · Wish, If Only, It's Time",
+    "body": "Wish/if only + past şimdiki gerçeği değiştirme dileği; + past perfect geçmiş pişmanlıktır. Wish + would değişmesi istenen davranış/durumlarda kullanılır. It's time + past artık yapılması gerekeni vurgular. Bu unreal past ile mandative subjunctive farklıdır: suggest/essential sonrası that + özne + yalın fiil gelir; üçüncü tekil -s almaz. Britanya İngilizcesinde should + fiil de yaygındır.",
+    "formula": "wish + past/had V3 • It's time + past • suggest that + özne + yalın fiil",
+    "examples": [
+      [
+        "I wish I had listened.",
+        "Keşke dinlemiş olsaydım."
+      ],
+      [
+        "It is essential that he be present.",
+        "Hazır bulunması şarttır."
+      ]
+    ],
+    "source": [
+      "British Council · Wishes and hypotheses",
+      "https://learnenglish.britishcouncil.org/free-resources/grammar/english-grammar-reference/wishes-hypotheses"
+    ],
+    "questions": [
+      {
+        "prompt": "I wish I ___ more time now.",
+        "options": [
+          "have had yesterday",
+          "will have",
+          "had"
+        ],
+        "correct": 2,
+        "explanation": "Şimdiki gerçek dışı dilek past alır."
+      },
+      {
+        "prompt": "They recommended that she ___ appointed.",
+        "options": [
+          "was being to",
+          "be",
+          "is"
+        ],
+        "correct": 1,
+        "explanation": "Mandative subjunctive yalın be kullanır."
+      }
+    ]
+  },
+  {
+    "id": "grammar-36",
+    "level": "C1",
+    "title": "Advanced Inversion",
+    "body": "No sooner ... than ve hardly/scarcely ... when art arda olayları vurgular; başta olduklarında çoğunlukla had + özne + V3 gelir. Only after/when ile ana cümle devrikleşir. Koşullarda if atılıp should/were/had öne alınabilir: Had I known. Olumsuzluk öznenin ardından gelir: Had I not known. Only John knew ifadesinde only özneyi niteler; devriklik yoktur.",
+    "formula": "No sooner had ... than ... • Hardly had ... when ... • Had I known ...",
+    "examples": [
+      [
+        "Hardly had we arrived when it began to rain.",
+        "Yeni varmıştık ki yağmur başladı."
+      ],
+      [
+        "Had I known, I would have helped.",
+        "Bilseydim yardım ederdim."
+      ]
+    ],
+    "source": [
+      "British Council · Inversion and conditionals",
+      "https://learnenglish.britishcouncil.org/free-resources/grammar/c1/inversion-conditionals"
+    ],
+    "questions": [
+      {
+        "prompt": "No sooner had we arrived ___ the lights went out.",
+        "options": [
+          "that",
+          "than",
+          "when"
+        ],
+        "correct": 1,
+        "explanation": "No sooner, than ile eşleşir."
+      },
+      {
+        "prompt": "___ I known, I would have called.",
+        "options": [
+          "Had",
+          "Have",
+          "Would"
+        ],
+        "correct": 0,
+        "explanation": "If I had known → Had I known olur."
+      }
+    ]
+  },
+  {
+    "id": "grammar-37",
+    "level": "C1",
+    "title": "Idioms ve Advanced Collocations",
+    "body": "Deyimlerin bütünü tek tek sözcüklerden farklı anlam verebilir: a blessing in disguise önce kötü görünen ama iyi sonuçlanan olaydır. Collocation doğal birlikteliktir: pose a threat, reach a consensus, compelling evidence. Kalıpları bağlam ve tonuyla öğren; eş anlamlı sözcükler her birleşime girmez. Gündelik deyimler resmî raporlarda uygun olmayabilir. Akademik/iş dilinde address an issue, draw a conclusion yararlıdır.",
+    "formula": "pose a threat • reach a consensus • on the same page",
+    "examples": [
+      [
+        "We finally reached a consensus.",
+        "Sonunda ortak görüşe vardık."
+      ],
+      [
+        "Let's make sure we're on the same page.",
+        "Ortak anlayışta olduğumuzdan emin olalım."
+      ]
+    ],
+    "source": [
+      "British Council · C1",
+      "https://learnenglish.britishcouncil.org/free-resources/grammar/c1"
+    ],
+    "questions": [
+      {
+        "prompt": "The policy may ___ a threat.",
+        "options": [
+          "pose",
+          "do",
+          "reach"
+        ],
+        "correct": 0,
+        "explanation": "Doğal birleşim pose a threat olur."
+      },
+      {
+        "prompt": "A blessing in disguise ne anlatır?",
+        "options": [
+          "Saklı kalan bir aksilik.",
+          "Baştan kusursuzluk.",
+          "Sonradan iyi sonuçlanan bir aksilik."
+        ],
+        "correct": 2,
+        "explanation": "İlk anda kötü görünen şey sonradan iyi sonuç verir."
+      }
+    ]
+  }
+];
+
+/* In-app grammar lessons and device-supported English letter audio. */
+const studyProgress=()=>{if(!state.grammarProgress||typeof state.grammarProgress!=='object')state.grammarProgress={};return state.grammarProgress;};
+let grammarFilter=state.level,activeGrammar=null;
+const grammarView=makeView('grammar','İngilizce Çalışalım','Konunu seç, örnekleri incele, alıştırmalarla kendini kontrol et.');grammarView.hidden=true;names.grammar='İngilizce Çalışalım';
+const grammarPanel=node('div',undefined,'study-panel');grammarView.append(grammarPanel);
+const alphabetView=makeView('alphabet','İngilizce Alfabesi','26 harf · Büyük/küçük yazılış · Okunuş · Dinleme');alphabetView.hidden=true;names.alphabet='İngilizce Alfabesi';
+for(const [id,label,icon,desc] of [['grammar','İngilizce Çalışalım','Aa','A1–C1 · 37 ders · Açıklamalı alıştırmalar'],['alphabet','İngilizce Alfabesi','ABC','26 harfin yazılışını ve okunuşunu keşfet']]){const nav=node('button',undefined,'nav');nav.dataset.view=id;nav.append(node('span',icon,'bottom-icon'),node('span',label));nav.onclick=()=>{if(id==='grammar')activeGrammar=null;show(id);};document.querySelector('aside nav').append(nav);const card=node('button',undefined,'card explore-card');card.append(node('span',icon,'track-icon'),node('h2',label),node('p',desc));card.onclick=()=>{if(id==='grammar')activeGrammar=null;show(id);};document.querySelector('.explore-grid').append(card);}
+const studyHome=node('div',undefined,'study-home');for(const [id,label,desc] of [['grammar','İngilizce Çalışalım →','Seviyene göre konu anlatımı ve cevap kontrollü pratik'],['alphabet','İngilizce Alfabesi →','Harflere dokun, İngilizce okunuşunu dinle']]){const b=node('button',undefined,'card study-entry');b.append(node('h2',label),node('p',desc));b.onclick=()=>{activeGrammar=null;show(id);};studyHome.append(b);}document.querySelector('#home .heading').after(studyHome);
+function studyButton(text,fn,cls='outline'){const b=node('button',text,cls);b.type='button';b.onclick=fn;return b;}
+function renderGrammar(){grammarPanel.replaceChildren();if(activeGrammar){renderGrammarLesson(activeGrammar);return;}grammarPanel.append(node('p','Düzeyler bu çalışma programının sıralamasıdır; resmî bir CEFR konu listesi veya seviye sınavı değildir. İstediğin düzeye geçebilirsin.','helper'));const tabs=node('div',undefined,'study-tabs');for(const l of ['A1','A2','B1','B2','C1','Tümü']){const b=studyButton(l,()=>{grammarFilter=l;renderGrammar();});b.setAttribute('aria-pressed',String(grammarFilter===l));tabs.append(b);}grammarPanel.append(tabs);if(grammarFilter==='C2')grammarPanel.append(node('p','C2 için bu bölümde henüz ayrı ders yok. A1–C1 konularını aşağıdan tekrar edebilirsin.'));const list=grammarLessons.filter(l=>!['A1','A2','B1','B2','C1'].includes(grammarFilter)||l.level===grammarFilter);const done=grammarLessons.filter(l=>studyProgress()[l.id]?.best===l.questions.length).length;grammarPanel.append(node('p',`${done}/37 ders tamamlandı · ${list.length} ders gösteriliyor`,'study-count'));const grid=node('div',undefined,'study-grid');for(const l of list){const p=studyProgress()[l.id],card=studyButton('',()=>openGrammar(l.id),'card study-lesson');card.dataset.lessonId=l.id;card.append(node('small',l.level+' · '+l.questions.length+' alıştırma'),node('h2',l.title),node('p',p?.best===l.questions.length?'✓ Tamamlandı · Tekrar çalış':p?'Devam et · En iyi sonuç '+(p.best||0)+'/'+l.questions.length:'Dersi aç →'));grid.append(card);}grammarPanel.append(grid);}
+function openGrammar(id){const l=grammarLessons.find(x=>x.id===id);if(!l)return;activeGrammar=id;show('grammar');grammarPanel.querySelector('h2')?.focus();}
+function renderGrammarLesson(id){const l=grammarLessons.find(x=>x.id===id);if(!l)return;const back=studyButton('← Konu listesi',()=>{activeGrammar=null;renderGrammar();});grammarPanel.append(back);const article=node('article',undefined,'card study-article');const title=node('h2',l.title);title.tabIndex=-1;article.append(node('small',l.level+' · Ders '+(grammarLessons.indexOf(l)+1)+'/37'),title,node('h3','1. Konuyu öğren'));for(const part of l.body.match(/[^.!?]+[.!?]+|[^.!?]+$/g)||[l.body])article.append(node('p',part.trim()));article.append(node('h3','2. Yapıyı fark et'),node('p',l.formula,'study-formula'),node('h3','3. Örnekleri karşılaştır'));for(const [en,tr] of l.examples){const ex=node('div',undefined,'study-example');const e=node('p',en);e.lang='en';ex.append(e,node('p',tr));article.append(ex);}article.append(node('p','Şimdi aynı yapıyla kendin bir cümle kur. Ardından aşağıdaki alıştırmalarda kuralı uygulamayı dene.','helper'));const src=node('details',undefined,'study-source');src.append(node('summary','Kaynak ve içerik notu'),node('p','Anlatım, örnekler ve sorular LWCT için hazırlanmıştır. Aşağıdaki dil bilgisi kaynağını ek okuma için kullanabilirsin.'));const link=node('a',l.source[0]);link.href=l.source[1];link.target='_blank';link.rel='noopener noreferrer';src.append(link);article.append(src);grammarPanel.append(article);
+ const practice=node('section',undefined,'card study-practice');practice.append(node('h2','4. Kendini dene'),node('p','Tüm soruları yanıtla, sonra kontrol et. Her cevabın açıklamasını göreceksin.'));const p=studyProgress()[id]||{},saved=Array.isArray(p.answers)?p.answers:[];const selected=l.questions.map((q,i)=>Number.isInteger(saved[i])&&saved[i]>=0&&saved[i]<q.options.length?saved[i]:null);const feedback=[];const fields=[];let checked=false;
+ const result=node('p',undefined,'study-result');result.setAttribute('role','status');result.setAttribute('aria-live','polite');
+ l.questions.forEach((q,i)=>{const field=node('fieldset',undefined,'study-question');fields.push(field);field.append(node('legend',(i+1)+'. '+q.prompt));q.options.forEach((option,j)=>{const label=node('label'),input=node('input');input.type='radio';input.name=id+'-q'+i;input.value=String(j);input.checked=selected[i]===j;input.onchange=()=>{selected[i]=j;studyProgress()[id]={...studyProgress()[id],answers:[...selected]};save();if(checked){checked=false;feedback.forEach(f=>{f.textContent='';f.className='study-feedback';});result.textContent='Cevap değişti. Sonucu güncellemek için yeniden kontrol et.';}};label.append(input,document.createTextNode(option));field.append(label);});const f=node('p',undefined,'study-feedback');feedback.push(f);field.append(f);practice.append(field);});
+ const check=studyButton('Cevapları kontrol et',()=>{const missing=selected.findIndex(x=>x===null);if(missing!==-1){result.textContent='Önce tüm soruları yanıtla. '+(missing+1)+'. soru boş.';fields[missing].querySelector('input')?.focus();return;}let score=0;l.questions.forEach((q,i)=>{const correct=selected[i]===q.correct;if(correct)score++;feedback[i].className='study-feedback '+(correct?'correct':'incorrect');feedback[i].textContent=(correct?'✓ Doğru. ':'✗ Henüz değil. Doğru cevap: '+q.options[q.correct]+'. ')+q.explanation;});const previous=studyProgress()[id]||{};studyProgress()[id]={...previous,answers:[...selected],best:Math.max(previous.best||0,score),last:score,checkedAt:new Date().toISOString()};save();checked=true;result.textContent=`${score}/${l.questions.length} doğru. `+(score===l.questions.length?'Ders tamamlandı! İstersen tekrar edebilir veya sonraki derse geçebilirsin.':'Açıklamaları incele, cevaplarını değiştir ve yeniden dene.');},'primary');
+ const retry=studyButton('Yanıtları temizle',()=>{studyProgress()[id]={...studyProgress()[id],answers:[]};save();renderGrammar();});practice.append(result,check,retry);if(Number.isInteger(p.best))practice.append(node('p',`Kayıtlı en iyi sonuç: ${p.best}/${l.questions.length} · İlerleme bu tarayıcıda saklanır.`,'helper'));grammarPanel.append(practice);const next=grammarLessons[grammarLessons.indexOf(l)+1];if(next)grammarPanel.append(studyButton('Sonraki ders: '+next.title+' →',()=>openGrammar(next.id)));}
+const alphabetLetters=[['A','eɪ','ey'],['B','biː','bi'],['C','siː','si'],['D','diː','di'],['E','iː','i'],['F','ef','ef'],['G','dʒiː','ci'],['H','eɪtʃ','eyç'],['I','aɪ','ay'],['J','dʒeɪ','cey'],['K','keɪ','key'],['L','el','el'],['M','em','em'],['N','en','en'],['O','əʊ','ou'],['P','piː','pi'],['Q','kjuː','kyu'],['R','ɑː','aa'],['S','es','es'],['T','tiː','ti'],['U','juː','yu'],['V','viː','vi'],['W','ˈdʌbəl juː','dabıl yu'],['X','eks','eks'],['Y','waɪ','vay'],['Z','zed','zed']];
+let alphabetDialect='en-GB',alphabetToken=0;
+const synth=window.speechSynthesis;const Utterance=window.SpeechSynthesisUtterance;
+const audioControls=node('div',undefined,'study-tabs'),dialect=node('select');dialect.setAttribute('aria-label','Telaffuz seçimi');for(const [value,label] of [['en-GB','İngiliz İngilizcesi'],['en-US','Amerikan İngilizcesi']]){const o=node('option',label);o.value=value;dialect.append(o);}dialect.value=alphabetDialect;const audioStatus=node('p','Dinlemek için bir harfe dokun.','helper');audioStatus.setAttribute('role','status');audioStatus.setAttribute('aria-live','polite');
+function stopAlphabet(){alphabetToken++;synth?.cancel();alphabetView.querySelectorAll('.letter-card').forEach(b=>b.classList.remove('speaking'));}
+function speakLetter(letter){stopAlphabet();if(!synth||!Utterance){audioStatus.textContent='Bu tarayıcı sesli okumayı desteklemiyor. Harflerin okunuşlarını aşağıdan okuyabilirsin.';return;}const voices=synth.getVoices().filter(v=>/^en([-_]|$)/i.test(v.lang));if(!voices.length){audioStatus.textContent='İngilizce ses henüz hazır değil. Cihazının konuşma seslerine İngilizce ekle ve tekrar dene.';return;}const voice=voices.find(v=>v.lang.toLowerCase()===alphabetDialect.toLowerCase())||voices[0];const us=/en[-_]us/i.test(voice.lang);const text=letter==='Z'?(us?'zee':'zed'):letter;const utter=new Utterance(text);utter.lang=voice.lang;utter.voice=voice;utter.rate=0.7;const token=alphabetToken;const card=alphabetView.querySelector('[data-letter="'+letter+'"]');card?.classList.add('speaking');audioStatus.textContent=letter+' dinleniyor · '+voice.lang+(voice.lang.toLowerCase()!==alphabetDialect.toLowerCase()?' (seçtiğin lehçe yok; mevcut İngilizce ses kullanılıyor)':'');const finish=()=>{if(token!==alphabetToken)return;card?.classList.remove('speaking');audioStatus.textContent=letter+' tamamlandı. Tekrar dinlemek için dokun.';};utter.onend=finish;utter.onerror=()=>{if(token!==alphabetToken)return;card?.classList.remove('speaking');audioStatus.textContent='Ses çalınamadı. Ses düzeyini ve cihazındaki İngilizce konuşma sesini kontrol edip tekrar dene.';};try{synth.speak(utter);}catch{utter.onerror();}}
+const letterGrid=node('div',undefined,'alphabet-grid');function drawAlphabet(){letterGrid.replaceChildren();for(const [letter,baseIpa,baseTr] of alphabetLetters){const us=alphabetDialect==='en-US';const ipa=us&&letter==='Z'?'ziː':us&&letter==='R'?'ɑːr':us&&letter==='O'?'oʊ':baseIpa;const approx=us&&letter==='Z'?'zi':us&&letter==='R'?'ar':baseTr;const b=studyButton('',()=>speakLetter(letter),'card letter-card');b.dataset.letter=letter;b.setAttribute('aria-label',letter+' harfini dinle');b.append(node('strong',letter+' '+letter.toLowerCase()),node('span','/'+ipa+'/'),node('small',approx+' · Dinle ♫'));letterGrid.append(b);}}
+dialect.onchange=()=>{alphabetDialect=dialect.value;stopAlphabet();drawAlphabet();audioStatus.textContent='Telaffuz seçildi. Bir harfe dokun.';};audioControls.append(dialect,studyButton('Sesi durdur',()=>{stopAlphabet();audioStatus.textContent='Ses durduruldu.';}));alphabetView.append(node('p','Burada harflerin adlarını öğreniyoruz; kelimelerdeki sesleri değişebilir. Türkçe okunuşlar yaklaşık bir rehberdir, IPA gösterimi ve İngilizce sesi esas al. Z: İngiliz İngilizcesinde zed, Amerikan İngilizcesinde zee.','helper'),audioControls,audioStatus,letterGrid,node('p','Sesler cihazın İngilizce konuşma motorundan gelir. Kullanılabilirlik ve çevrimdışı dinleme, yüklü seslere bağlıdır.','helper'));const alphabetSource=node('a','Kaynak: EnglishClub · English Alphabet');alphabetSource.href='https://www.englishclub.com/pronunciation/alphabet.php';alphabetSource.target='_blank';alphabetSource.rel='noopener noreferrer';alphabetView.append(alphabetSource);drawAlphabet();
+const previousStudyShow=show;show=function(view){if(view!=='alphabet')stopAlphabet();previousStudyShow(view);if(view==='grammar')renderGrammar();};
+const previousStudyLevel=chooseLevel;chooseLevel=function(value){activeGrammar=null;grammarFilter=value;previousStudyLevel(value);};
+const studyStyle=node('style');studyStyle.textContent='.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.study-home,.study-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:20px 0}.study-entry,.study-lesson{text-align:left;padding:24px;cursor:pointer;color:inherit;font:inherit}.study-entry:first-child{background:#e6efd9;border-color:#a6bd8b}.study-entry h2,.study-lesson h2{font-size:20px;margin:8px 0}.study-entry p,.study-lesson p{line-height:1.6;color:#536347}.study-tabs{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0}.study-tabs [aria-pressed=true]{background:#315b40;color:white}.study-tabs select{font:inherit;padding:12px;border:1px solid #a8b79b;border-radius:12px}.study-article,.study-practice{max-width:860px;padding:28px;margin:20px 0}.study-article p{line-height:1.85}.study-article h3{margin-top:26px}.study-formula{background:#edf3e5;border-left:4px solid #688856;padding:16px;font-weight:600}.study-example{border-bottom:1px solid #e3e8dc;padding:8px 0}.study-example p:first-child{font-weight:600}.study-example p:last-child{color:#536347}.study-source{margin-top:22px}.study-source summary{cursor:pointer}.study-question{border:1px solid #d9e1d0;border-radius:12px;padding:18px;margin:24px 0}.study-question legend{font-weight:600;line-height:1.6;padding:0 6px}.study-question label{display:flex;gap:12px;align-items:center;min-height:48px;padding:8px;cursor:pointer}.study-question input{width:20px;height:20px;flex:none;accent-color:#416d45}.study-question label:has(input:checked){background:#edf3e5;border-radius:8px}.study-feedback{line-height:1.7}.study-feedback.correct{color:#24652d}.study-feedback.incorrect{color:#9c3434}.study-practice button{margin:6px 10px 6px 0}.study-result{font-weight:600;line-height:1.7}.alphabet-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;margin:24px 0}.letter-card{display:flex;flex-direction:column;gap:12px;padding:20px 10px;text-align:center;align-items:center;font:inherit;cursor:pointer;color:inherit}.letter-card strong{font-size:30px}.letter-card.speaking{outline:3px solid #537a38;background:#e6efd9}#alphabet .helper{line-height:1.8;max-width:850px}.study-panel button:focus-visible,.letter-card:focus-visible{outline:3px solid #315b40;outline-offset:3px}@media(max-width:800px){.alphabet-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}@media(max-width:600px){.study-home,.study-grid{grid-template-columns:1fr}.study-article,.study-practice{padding:18px}.alphabet-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.letter-card strong{font-size:25px}.study-tabs{gap:8px}.study-question{padding:12px}.stats{grid-template-columns:1fr}}';document.head.append(studyStyle);
+document.querySelector('.release-label').textContent=' · Sürüm 2026.10.25 · 37 dil bilgisi dersi · 74 alıştırma · Sesli alfabe';
+
 
 // Offline status is based on a completed cache, not a guess about connectivity.
 if(typeof navigator!=='undefined'&&'serviceWorker' in navigator&&/^https?:$/.test(location.protocol)){
